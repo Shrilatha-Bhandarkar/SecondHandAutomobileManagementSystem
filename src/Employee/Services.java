@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package jFrame;
+package Employee;
 
 /**
  *
@@ -68,7 +68,7 @@ public class Services extends javax.swing.JFrame {
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("Employees");
 
-        jLabel13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jFrame/Icons/DashUser.png"))); // NOI18N
+        jLabel13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Employee/Icons/DashUser.png"))); // NOI18N
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -121,7 +121,7 @@ public class Services extends javax.swing.JFrame {
                 .addComponent(jLabel5)
                 .addGap(50, 50, 50)
                 .addComponent(jLabel6)
-                .addContainerGap(145, Short.MAX_VALUE))
+                .addContainerGap(144, Short.MAX_VALUE))
         );
 
         jPanel6.setBackground(new java.awt.Color(51, 0, 153));
@@ -144,7 +144,7 @@ public class Services extends javax.swing.JFrame {
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addGap(20, 20, 20)
                 .addComponent(jLabel9)
-                .addContainerGap(571, Short.MAX_VALUE))
+                .addContainerGap(570, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);

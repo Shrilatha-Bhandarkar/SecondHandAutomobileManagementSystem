@@ -78,13 +78,13 @@
                           <Group type="102" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="jLabel3" alignment="1" max="32767" attributes="0"/>
+                                  <Component id="CurrentVehicle" alignment="1" max="32767" attributes="0"/>
                                   <Group type="102" attributes="0">
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="jLabel4" alignment="0" min="-2" pref="120" max="-2" attributes="0"/>
-                                          <Component id="jLabel5" alignment="0" min="-2" pref="120" max="-2" attributes="0"/>
-                                          <Component id="jLabel6" alignment="0" min="-2" pref="120" max="-2" attributes="0"/>
-                                          <Component id="jLabel2" alignment="0" min="-2" pref="134" max="-2" attributes="0"/>
+                                          <Component id="BuyVehicle" alignment="0" min="-2" pref="120" max="-2" attributes="0"/>
+                                          <Component id="Services" alignment="0" min="-2" pref="120" max="-2" attributes="0"/>
+                                          <Component id="Employees" alignment="0" min="-2" pref="120" max="-2" attributes="0"/>
+                                          <Component id="Home" alignment="0" min="-2" pref="134" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace min="0" pref="27" max="32767" attributes="0"/>
                                   </Group>
@@ -113,15 +113,15 @@
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
-                      <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
+                      <Component id="Home" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="49" max="-2" attributes="0"/>
-                      <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                      <Component id="CurrentVehicle" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="47" max="-2" attributes="0"/>
-                      <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
+                      <Component id="BuyVehicle" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="53" max="-2" attributes="0"/>
-                      <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
+                      <Component id="Services" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="46" max="-2" attributes="0"/>
-                      <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
+                      <Component id="Employees" min="-2" max="-2" attributes="0"/>
                       <EmptySpace pref="139" max="32767" attributes="0"/>
                   </Group>
               </Group>
@@ -139,7 +139,7 @@
                 <Property name="text" type="java.lang.String" value="Welcome!"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="jLabel2">
+            <Component class="javax.swing.JLabel" name="Home">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Segoe UI" size="18" style="1"/>
@@ -149,8 +149,11 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Home"/>
               </Properties>
+              <Events>
+                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="HomeMouseClicked"/>
+              </Events>
             </Component>
-            <Component class="javax.swing.JLabel" name="jLabel3">
+            <Component class="javax.swing.JLabel" name="CurrentVehicle">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Segoe UI" size="18" style="1"/>
@@ -160,8 +163,11 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Current Vehicle"/>
               </Properties>
+              <Events>
+                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="CurrentVehicleMouseClicked"/>
+              </Events>
             </Component>
-            <Component class="javax.swing.JLabel" name="jLabel4">
+            <Component class="javax.swing.JLabel" name="BuyVehicle">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Segoe UI" size="18" style="1"/>
@@ -171,8 +177,11 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Buy Vehicle"/>
               </Properties>
+              <Events>
+                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="BuyVehicleMouseClicked"/>
+              </Events>
             </Component>
-            <Component class="javax.swing.JLabel" name="jLabel5">
+            <Component class="javax.swing.JLabel" name="Services">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Segoe UI" size="18" style="1"/>
@@ -182,8 +191,11 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Services"/>
               </Properties>
+              <Events>
+                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="ServicesMouseClicked"/>
+              </Events>
             </Component>
-            <Component class="javax.swing.JLabel" name="jLabel6">
+            <Component class="javax.swing.JLabel" name="Employees">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Segoe UI" size="18" style="1"/>
@@ -193,11 +205,14 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Employees"/>
               </Properties>
+              <Events>
+                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="EmployeesMouseClicked"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel11">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/jFrame/Icons/DashUser.png"/>
+                  <Image iconType="3" name="/Icons/DashUser.png"/>
                 </Property>
               </Properties>
             </Component>
@@ -206,7 +221,7 @@
         <Container class="javax.swing.JPanel" name="jPanel6">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-              <Color blue="99" green="0" red="33" type="rgb"/>
+              <Color blue="66" green="33" red="0" type="rgb"/>
             </Property>
           </Properties>
 

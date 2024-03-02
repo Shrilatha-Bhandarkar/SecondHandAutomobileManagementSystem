@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package jFrame;
+package Employee;
 
 /**
  *
@@ -29,12 +29,12 @@ public class BuyVehicle extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
+        Home = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
+        CurrentVehicle = new javax.swing.JLabel();
+        BuyVehicle = new javax.swing.JLabel();
+        Services = new javax.swing.JLabel();
+        Employee = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
@@ -49,31 +49,46 @@ public class BuyVehicle extends javax.swing.JFrame {
 
         jPanel2.setBackground(new java.awt.Color(255, 102, 51));
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setText("Home");
+        Home.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        Home.setForeground(new java.awt.Color(255, 255, 255));
+        Home.setText("Home");
+        Home.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                HomeMouseClicked(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Welcome!");
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setText("Current Vehicle");
+        CurrentVehicle.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        CurrentVehicle.setForeground(new java.awt.Color(255, 255, 255));
+        CurrentVehicle.setText("Current Vehicle");
 
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setText("Buy Vehicle");
+        BuyVehicle.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        BuyVehicle.setForeground(new java.awt.Color(255, 255, 255));
+        BuyVehicle.setText("Buy Vehicle");
 
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel5.setText("Services");
+        Services.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        Services.setForeground(new java.awt.Color(255, 255, 255));
+        Services.setText("Services");
+        Services.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                ServicesMouseClicked(evt);
+            }
+        });
 
-        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel6.setText("Employees");
+        Employee.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        Employee.setForeground(new java.awt.Color(255, 255, 255));
+        Employee.setText("Employees");
+        Employee.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                EmployeeMouseClicked(evt);
+            }
+        });
 
-        jLabel13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jFrame/Icons/DashUser.png"))); // NOI18N
+        jLabel13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Employee/Icons/DashUser.png"))); // NOI18N
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -84,9 +99,9 @@ public class BuyVehicle extends javax.swing.JFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(CurrentVehicle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(Services, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE))))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -95,13 +110,13 @@ public class BuyVehicle extends javax.swing.JFrame {
                                 .addComponent(jLabel1))
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(Employee, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(Home, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(BuyVehicle, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 27, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(jPanel2Layout.createSequentialGroup()
@@ -117,15 +132,15 @@ public class BuyVehicle extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1)
                 .addGap(30, 30, 30)
-                .addComponent(jLabel2)
+                .addComponent(Home)
                 .addGap(55, 55, 55)
-                .addComponent(jLabel3)
+                .addComponent(CurrentVehicle)
                 .addGap(50, 50, 50)
-                .addComponent(jLabel4)
+                .addComponent(BuyVehicle)
                 .addGap(50, 50, 50)
-                .addComponent(jLabel5)
+                .addComponent(Services)
                 .addGap(50, 50, 50)
-                .addComponent(jLabel6)
+                .addComponent(Employee)
                 .addContainerGap(145, Short.MAX_VALUE))
         );
 
@@ -185,6 +200,19 @@ public class BuyVehicle extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void HomeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_HomeMouseClicked
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_HomeMouseClicked
+
+    private void ServicesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ServicesMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ServicesMouseClicked
+
+    private void EmployeeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_EmployeeMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_EmployeeMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -221,13 +249,13 @@ public class BuyVehicle extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel BuyVehicle;
+    private javax.swing.JLabel CurrentVehicle;
+    private javax.swing.JLabel Employee;
+    private javax.swing.JLabel Home;
+    private javax.swing.JLabel Services;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
