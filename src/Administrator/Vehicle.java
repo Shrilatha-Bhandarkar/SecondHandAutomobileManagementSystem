@@ -17,9 +17,9 @@ public class Vehicle extends javax.swing.JFrame {
         Bike = new javax.swing.JPanel();
         biket = new javax.swing.JLabel();
         bikel = new javax.swing.JLabel();
-        Car = new javax.swing.JPanel();
-        cart = new javax.swing.JLabel();
-        carl = new javax.swing.JLabel();
+        soldCar = new javax.swing.JPanel();
+        soldcart = new javax.swing.JLabel();
+        soldcar = new javax.swing.JLabel();
         Truck = new javax.swing.JPanel();
         truckt = new javax.swing.JLabel();
         truckl = new javax.swing.JLabel();
@@ -27,6 +27,21 @@ public class Vehicle extends javax.swing.JFrame {
         scootert = new javax.swing.JLabel();
         scooterl = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
+        soldbike = new javax.swing.JPanel();
+        biket1 = new javax.swing.JLabel();
+        bikel1 = new javax.swing.JLabel();
+        Car = new javax.swing.JPanel();
+        cart1 = new javax.swing.JLabel();
+        carl1 = new javax.swing.JLabel();
+        soldtruck = new javax.swing.JPanel();
+        truckt1 = new javax.swing.JLabel();
+        truckl1 = new javax.swing.JLabel();
+        soldscooter = new javax.swing.JPanel();
+        scootert1 = new javax.swing.JLabel();
+        scooterl1 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
         Dashboard = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
         Home = new javax.swing.JLabel();
@@ -44,12 +59,15 @@ public class Vehicle extends javax.swing.JFrame {
         jPanel5.setBackground(new java.awt.Color(0, 0, 51));
 
         Heading.setBackground(new java.awt.Color(0, 51, 102));
+        Heading.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel8.setBackground(new java.awt.Color(0, 0, 0));
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 48)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
         jLabel8.setText("Current Vehicle");
+        Heading.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 30, -1, -1));
 
-        Bike.setBackground(new java.awt.Color(255, 102, 51));
+        Bike.setBackground(new java.awt.Color(255, 255, 255));
         Bike.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 BikeMouseClicked(evt);
@@ -82,64 +100,68 @@ public class Vehicle extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, BikeLayout.createSequentialGroup()
                         .addComponent(biket, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(9, 9, 9)))
-                .addContainerGap(67, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         BikeLayout.setVerticalGroup(
             BikeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, BikeLayout.createSequentialGroup()
-                .addContainerGap(29, Short.MAX_VALUE)
+                .addContainerGap(41, Short.MAX_VALUE)
                 .addComponent(bikel, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(biket)
                 .addGap(30, 30, 30))
         );
 
-        Car.setBackground(new java.awt.Color(255, 102, 51));
-        Car.addMouseListener(new java.awt.event.MouseAdapter() {
+        Heading.add(Bike, new org.netbeans.lib.awtextra.AbsoluteConstraints(14, 126, 209, -1));
+
+        soldCar.setBackground(new java.awt.Color(255, 255, 255));
+        soldCar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                CarMouseClicked(evt);
+                soldCarMouseClicked(evt);
             }
         });
 
-        cart.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        cart.setText("CAR");
-        cart.addMouseListener(new java.awt.event.MouseAdapter() {
+        soldcart.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        soldcart.setText("CAR");
+        soldcart.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                cartMouseClicked(evt);
+                soldcartMouseClicked(evt);
             }
         });
 
-        carl.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/car.png"))); // NOI18N
-        carl.addMouseListener(new java.awt.event.MouseAdapter() {
+        soldcar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/car.png"))); // NOI18N
+        soldcar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                carlMouseClicked(evt);
+                soldcarMouseClicked(evt);
             }
         });
 
-        javax.swing.GroupLayout CarLayout = new javax.swing.GroupLayout(Car);
-        Car.setLayout(CarLayout);
-        CarLayout.setHorizontalGroup(
-            CarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, CarLayout.createSequentialGroup()
+        javax.swing.GroupLayout soldCarLayout = new javax.swing.GroupLayout(soldCar);
+        soldCar.setLayout(soldCarLayout);
+        soldCarLayout.setHorizontalGroup(
+            soldCarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, soldCarLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(cart, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(soldcart, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(70, 70, 70))
-            .addGroup(CarLayout.createSequentialGroup()
+            .addGroup(soldCarLayout.createSequentialGroup()
                 .addGap(72, 72, 72)
-                .addComponent(carl)
+                .addComponent(soldcar)
                 .addContainerGap(58, Short.MAX_VALUE))
         );
-        CarLayout.setVerticalGroup(
-            CarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, CarLayout.createSequentialGroup()
+        soldCarLayout.setVerticalGroup(
+            soldCarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, soldCarLayout.createSequentialGroup()
                 .addGap(44, 44, 44)
-                .addComponent(carl, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(cart)
+                .addComponent(soldcar, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
+                .addComponent(soldcart)
                 .addGap(27, 27, 27))
         );
 
-        Truck.setBackground(new java.awt.Color(255, 102, 51));
+        Heading.add(soldCar, new org.netbeans.lib.awtextra.AbsoluteConstraints(264, 439, -1, -1));
+
+        Truck.setBackground(new java.awt.Color(255, 255, 255));
         Truck.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 TruckMouseClicked(evt);
@@ -166,7 +188,7 @@ public class Vehicle extends javax.swing.JFrame {
         TruckLayout.setHorizontalGroup(
             TruckLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, TruckLayout.createSequentialGroup()
-                .addContainerGap(69, Short.MAX_VALUE)
+                .addContainerGap(81, Short.MAX_VALUE)
                 .addGroup(TruckLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(truckl, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(truckt))
@@ -177,12 +199,14 @@ public class Vehicle extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, TruckLayout.createSequentialGroup()
                 .addGap(39, 39, 39)
                 .addComponent(truckl, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
                 .addComponent(truckt)
                 .addGap(30, 30, 30))
         );
 
-        Scooter.setBackground(new java.awt.Color(255, 102, 51));
+        Heading.add(Truck, new org.netbeans.lib.awtextra.AbsoluteConstraints(486, 126, -1, -1));
+
+        Scooter.setBackground(new java.awt.Color(255, 255, 255));
         Scooter.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 ScooterMouseClicked(evt);
@@ -209,7 +233,7 @@ public class Vehicle extends javax.swing.JFrame {
         ScooterLayout.setHorizontalGroup(
             ScooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ScooterLayout.createSequentialGroup()
-                .addContainerGap(53, Short.MAX_VALUE)
+                .addContainerGap(65, Short.MAX_VALUE)
                 .addGroup(ScooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(scootert, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(scooterl, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -220,57 +244,221 @@ public class Vehicle extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ScooterLayout.createSequentialGroup()
                 .addGap(29, 29, 29)
                 .addComponent(scooterl, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
                 .addComponent(scootert)
                 .addGap(28, 28, 28))
         );
 
-        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        Heading.add(Scooter, new org.netbeans.lib.awtextra.AbsoluteConstraints(727, 126, -1, -1));
+
+        jLabel9.setBackground(new java.awt.Color(0, 255, 0));
+        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 48)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(255, 255, 255));
         jLabel9.setText("Sold Vehicle");
+        Heading.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 360, -1, -1));
 
-        javax.swing.GroupLayout HeadingLayout = new javax.swing.GroupLayout(Heading);
-        Heading.setLayout(HeadingLayout);
-        HeadingLayout.setHorizontalGroup(
-            HeadingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(HeadingLayout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addComponent(Bike, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
-                .addComponent(Car, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
-                .addComponent(Truck, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26)
-                .addComponent(Scooter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, HeadingLayout.createSequentialGroup()
+        soldbike.setBackground(new java.awt.Color(255, 255, 255));
+        soldbike.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                soldbikeMouseClicked(evt);
+            }
+        });
+
+        biket1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        biket1.setText("BIKE");
+        biket1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                biket1MouseClicked(evt);
+            }
+        });
+
+        bikel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/bike.png"))); // NOI18N
+        bikel1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                bikel1MouseClicked(evt);
+            }
+        });
+
+        javax.swing.GroupLayout soldbikeLayout = new javax.swing.GroupLayout(soldbike);
+        soldbike.setLayout(soldbikeLayout);
+        soldbikeLayout.setHorizontalGroup(
+            soldbikeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(soldbikeLayout.createSequentialGroup()
+                .addGap(72, 72, 72)
+                .addGroup(soldbikeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(bikel1)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, soldbikeLayout.createSequentialGroup()
+                        .addComponent(biket1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(9, 9, 9)))
+                .addContainerGap(67, Short.MAX_VALUE))
+        );
+        soldbikeLayout.setVerticalGroup(
+            soldbikeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, soldbikeLayout.createSequentialGroup()
+                .addContainerGap(41, Short.MAX_VALUE)
+                .addComponent(bikel1, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(biket1)
+                .addGap(30, 30, 30))
+        );
+
+        Heading.add(soldbike, new org.netbeans.lib.awtextra.AbsoluteConstraints(14, 439, -1, -1));
+
+        Car.setBackground(new java.awt.Color(255, 255, 255));
+        Car.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                CarMouseClicked(evt);
+            }
+        });
+
+        cart1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        cart1.setText("CAR");
+        cart1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                cart1MouseClicked(evt);
+            }
+        });
+
+        carl1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/car.png"))); // NOI18N
+        carl1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                carl1MouseClicked(evt);
+            }
+        });
+
+        javax.swing.GroupLayout CarLayout = new javax.swing.GroupLayout(Car);
+        Car.setLayout(CarLayout);
+        CarLayout.setHorizontalGroup(
+            CarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, CarLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(HeadingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, HeadingLayout.createSequentialGroup()
-                        .addComponent(jLabel8)
-                        .addGap(354, 354, 354))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, HeadingLayout.createSequentialGroup()
-                        .addComponent(jLabel9)
-                        .addGap(357, 357, 357))))
+                .addComponent(cart1, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(70, 70, 70))
+            .addGroup(CarLayout.createSequentialGroup()
+                .addGap(72, 72, 72)
+                .addComponent(carl1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        HeadingLayout.setVerticalGroup(
-            HeadingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(HeadingLayout.createSequentialGroup()
-                .addGap(35, 35, 35)
-                .addComponent(jLabel8)
-                .addGap(43, 43, 43)
-                .addGroup(HeadingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(HeadingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(Bike, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(Car, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(Truck, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(Scooter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(66, 66, 66)
-                .addComponent(jLabel9)
-                .addContainerGap(324, Short.MAX_VALUE))
+        CarLayout.setVerticalGroup(
+            CarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, CarLayout.createSequentialGroup()
+                .addGap(44, 44, 44)
+                .addComponent(carl1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(cart1)
+                .addGap(27, 27, 27))
         );
 
-        Dashboard.setBackground(new java.awt.Color(255, 102, 51));
+        Heading.add(Car, new org.netbeans.lib.awtextra.AbsoluteConstraints(254, 126, 204, 197));
+
+        soldtruck.setBackground(new java.awt.Color(255, 255, 255));
+        soldtruck.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                soldtruckMouseClicked(evt);
+            }
+        });
+
+        truckt1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        truckt1.setText("TRUCK");
+        truckt1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                truckt1MouseClicked(evt);
+            }
+        });
+
+        truckl1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/truck.png"))); // NOI18N
+        truckl1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                truckl1MouseClicked(evt);
+            }
+        });
+
+        javax.swing.GroupLayout soldtruckLayout = new javax.swing.GroupLayout(soldtruck);
+        soldtruck.setLayout(soldtruckLayout);
+        soldtruckLayout.setHorizontalGroup(
+            soldtruckLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, soldtruckLayout.createSequentialGroup()
+                .addContainerGap(69, Short.MAX_VALUE)
+                .addGroup(soldtruckLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(truckl1, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(truckt1))
+                .addGap(65, 65, 65))
+        );
+        soldtruckLayout.setVerticalGroup(
+            soldtruckLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, soldtruckLayout.createSequentialGroup()
+                .addGap(39, 39, 39)
+                .addComponent(truckl1, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(truckt1)
+                .addGap(30, 30, 30))
+        );
+
+        Heading.add(soldtruck, new org.netbeans.lib.awtextra.AbsoluteConstraints(498, 439, -1, 197));
+
+        soldscooter.setBackground(new java.awt.Color(255, 255, 255));
+        soldscooter.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                soldscooterMouseClicked(evt);
+            }
+        });
+
+        scootert1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        scootert1.setText("SCOOTER");
+        scootert1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                scootert1MouseClicked(evt);
+            }
+        });
+
+        scooterl1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/scooter.png"))); // NOI18N
+        scooterl1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                scooterl1MouseClicked(evt);
+            }
+        });
+
+        javax.swing.GroupLayout soldscooterLayout = new javax.swing.GroupLayout(soldscooter);
+        soldscooter.setLayout(soldscooterLayout);
+        soldscooterLayout.setHorizontalGroup(
+            soldscooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, soldscooterLayout.createSequentialGroup()
+                .addContainerGap(53, Short.MAX_VALUE)
+                .addGroup(soldscooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(scootert1, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(scooterl1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(63, 63, 63))
+        );
+        soldscooterLayout.setVerticalGroup(
+            soldscooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, soldscooterLayout.createSequentialGroup()
+                .addGap(29, 29, 29)
+                .addComponent(scooterl1, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(scootert1)
+                .addGap(28, 28, 28))
+        );
+
+        Heading.add(soldscooter, new org.netbeans.lib.awtextra.AbsoluteConstraints(727, 439, -1, 197));
+        Heading.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(-5, -5, 960, 10));
+
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/BG14.png"))); // NOI18N
+        Heading.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -10, 980, 690));
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 50, Short.MAX_VALUE)
+        );
+
+        Heading.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 20, -1, 50));
+
+        Dashboard.setBackground(new java.awt.Color(0, 0, 0));
 
         jLabel13.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel13.setForeground(new java.awt.Color(255, 255, 255));
@@ -321,7 +509,7 @@ public class Vehicle extends javax.swing.JFrame {
             }
         });
 
-        jLabel14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/DashUser.png"))); // NOI18N
+        jLabel14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/ID.png"))); // NOI18N
 
         warehouse.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         warehouse.setForeground(new java.awt.Color(255, 255, 255));
@@ -368,7 +556,7 @@ public class Vehicle extends javax.swing.JFrame {
                                     .addComponent(Home, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(warehouse, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(client, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(0, 32, Short.MAX_VALUE))))
+                                .addGap(0, 0, Short.MAX_VALUE))))
                     .addGroup(DashboardLayout.createSequentialGroup()
                         .addGap(34, 34, 34)
                         .addComponent(jLabel13)
@@ -386,7 +574,7 @@ public class Vehicle extends javax.swing.JFrame {
                     .addGroup(DashboardLayout.createSequentialGroup()
                         .addGap(26, 26, 26)
                         .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(26, Short.MAX_VALUE))
         );
         DashboardLayout.setVerticalGroup(
             DashboardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -421,18 +609,14 @@ public class Vehicle extends javax.swing.JFrame {
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addComponent(Dashboard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(Heading, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(Heading, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(Dashboard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(Dashboard, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel5Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(Heading, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(0, 0, 0)
+                .addComponent(Heading, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -443,7 +627,7 @@ public class Vehicle extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 672, Short.MAX_VALUE)
         );
 
         pack();
@@ -456,12 +640,12 @@ public class Vehicle extends javax.swing.JFrame {
         dispose(); // Close the Vehicle frame
     }//GEN-LAST:event_BikeMouseClicked
 
-    private void CarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_CarMouseClicked
+    private void soldCarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_soldCarMouseClicked
         
-        VehicleDetails vehicleDetailsFrame = new VehicleDetails("Car");
+        SoldVehicleDetails vehicleDetailsFrame = new SoldVehicleDetails("Car");
         vehicleDetailsFrame.setVisible(true);
         dispose(); 
-    }//GEN-LAST:event_CarMouseClicked
+    }//GEN-LAST:event_soldCarMouseClicked
 
     private void TruckMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TruckMouseClicked
         // TODO add your handling code here:
@@ -491,19 +675,20 @@ public class Vehicle extends javax.swing.JFrame {
         dispose(); // Close the Vehicle frame
     }//GEN-LAST:event_biketMouseClicked
 
-    private void carlMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_carlMouseClicked
+    private void soldcarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_soldcarMouseClicked
         // TODO add your handling code here:
-        VehicleDetails vehicleDetailsFrame = new VehicleDetails("Car");
+        SoldVehicleDetails vehicleDetailsFrame = new SoldVehicleDetails("Car");
         vehicleDetailsFrame.setVisible(true);
         dispose(); 
-    }//GEN-LAST:event_carlMouseClicked
+    }//GEN-LAST:event_soldcarMouseClicked
 
-    private void cartMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cartMouseClicked
+    private void soldcartMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_soldcartMouseClicked
         // TODO add your handling code here:
-        VehicleDetails vehicleDetailsFrame = new VehicleDetails("Car");
+        SoldVehicleDetails vehicleDetailsFrame = new SoldVehicleDetails("Car");
         vehicleDetailsFrame.setVisible(true);
         dispose(); 
-    }//GEN-LAST:event_cartMouseClicked
+        
+    }//GEN-LAST:event_soldcartMouseClicked
 
     private void trucklMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_trucklMouseClicked
         // TODO add your handling code here:
@@ -589,6 +774,90 @@ public class Vehicle extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_jLabel15MouseClicked
 
+    private void biket1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_biket1MouseClicked
+        // TODO add your handling code here:
+        SoldVehicleDetails vehicleDetailsFrame = new SoldVehicleDetails("Bike");
+        vehicleDetailsFrame.setVisible(true);
+        dispose(); 
+    }//GEN-LAST:event_biket1MouseClicked
+
+    private void bikel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bikel1MouseClicked
+        // TODO add your handling code here:
+        SoldVehicleDetails vehicleDetailsFrame = new SoldVehicleDetails("Bike");
+        vehicleDetailsFrame.setVisible(true);
+        dispose(); 
+    }//GEN-LAST:event_bikel1MouseClicked
+
+    private void soldbikeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_soldbikeMouseClicked
+        // TODO add your handling code here:
+        SoldVehicleDetails vehicleDetailsFrame = new SoldVehicleDetails("Bike");
+        vehicleDetailsFrame.setVisible(true);
+        dispose(); 
+    }//GEN-LAST:event_soldbikeMouseClicked
+
+    private void cart1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cart1MouseClicked
+        // TODO add your handling code here:
+        VehicleDetails vehicleDetailsFrame = new VehicleDetails("Car");
+        vehicleDetailsFrame.setVisible(true);
+        dispose(); 
+    }//GEN-LAST:event_cart1MouseClicked
+
+    private void carl1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_carl1MouseClicked
+        // TODO add your handling code here:
+        VehicleDetails vehicleDetailsFrame = new VehicleDetails("Car");
+        vehicleDetailsFrame.setVisible(true);
+        dispose(); 
+    }//GEN-LAST:event_carl1MouseClicked
+
+    private void CarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_CarMouseClicked
+        // TODO add your handling code here:
+        VehicleDetails vehicleDetailsFrame = new VehicleDetails("Car");
+        vehicleDetailsFrame.setVisible(true);
+        dispose(); 
+    }//GEN-LAST:event_CarMouseClicked
+
+    private void truckt1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_truckt1MouseClicked
+        // TODO add your handling code here:
+        SoldVehicleDetails vehicleDetailsFrame = new SoldVehicleDetails("Truck");
+        vehicleDetailsFrame.setVisible(true);
+        dispose(); 
+    }//GEN-LAST:event_truckt1MouseClicked
+
+    private void truckl1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_truckl1MouseClicked
+        // TODO add your handling code here:
+        SoldVehicleDetails vehicleDetailsFrame = new SoldVehicleDetails("Truck");
+        vehicleDetailsFrame.setVisible(true);
+        dispose(); 
+    }//GEN-LAST:event_truckl1MouseClicked
+
+    private void soldtruckMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_soldtruckMouseClicked
+        // TODO add your handling code here:
+        SoldVehicleDetails vehicleDetailsFrame = new SoldVehicleDetails("Truck");
+        vehicleDetailsFrame.setVisible(true);
+        dispose(); 
+    }//GEN-LAST:event_soldtruckMouseClicked
+
+    private void scootert1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_scootert1MouseClicked
+        // TODO add your handling code here:
+        SoldVehicleDetails vehicleDetailsFrame = new SoldVehicleDetails("Scooter");
+        vehicleDetailsFrame.setVisible(true);
+        dispose(); 
+    }//GEN-LAST:event_scootert1MouseClicked
+
+    private void scooterl1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_scooterl1MouseClicked
+        // TODO add your handling code here:
+        SoldVehicleDetails vehicleDetailsFrame = new SoldVehicleDetails("Scooter");
+        vehicleDetailsFrame.setVisible(true);
+        dispose(); 
+    }//GEN-LAST:event_scooterl1MouseClicked
+
+    private void soldscooterMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_soldscooterMouseClicked
+        // TODO add your handling code here:
+        SoldVehicleDetails vehicleDetailsFrame = new SoldVehicleDetails("Scooter");
+        vehicleDetailsFrame.setVisible(true);
+        dispose(); 
+    }//GEN-LAST:event_soldscooterMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -638,20 +907,35 @@ public class Vehicle extends javax.swing.JFrame {
     private javax.swing.JLabel Staff;
     private javax.swing.JPanel Truck;
     private javax.swing.JLabel bikel;
+    private javax.swing.JLabel bikel1;
     private javax.swing.JLabel biket;
-    private javax.swing.JLabel carl;
-    private javax.swing.JLabel cart;
+    private javax.swing.JLabel biket1;
+    private javax.swing.JLabel carl1;
+    private javax.swing.JLabel cart1;
     private javax.swing.JLabel client;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JLabel scooterl;
+    private javax.swing.JLabel scooterl1;
     private javax.swing.JLabel scootert;
+    private javax.swing.JLabel scootert1;
+    private javax.swing.JPanel soldCar;
+    private javax.swing.JPanel soldbike;
+    private javax.swing.JLabel soldcar;
+    private javax.swing.JLabel soldcart;
+    private javax.swing.JPanel soldscooter;
+    private javax.swing.JPanel soldtruck;
     private javax.swing.JLabel truckl;
+    private javax.swing.JLabel truckl1;
     private javax.swing.JLabel truckt;
+    private javax.swing.JLabel truckt1;
     private javax.swing.JLabel warehouse;
     // End of variables declaration//GEN-END:variables
 }

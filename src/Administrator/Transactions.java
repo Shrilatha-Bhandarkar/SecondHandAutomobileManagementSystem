@@ -12,7 +12,6 @@ public class Transactions extends javax.swing.JFrame {
     public Transactions() {
         initComponents();
         Connect();
-        createTransactionPriceTrigger(); 
     }
     Connection conn;
     PreparedStatement pat;
@@ -51,34 +50,18 @@ private void insertBuyerDetails(int vehicleId,int buyerId, String buyerName, Str
         insertStmt.executeUpdate();
     }
 }
-private void createTransactionPriceTrigger() {
-        try {
-            String triggerQuery = "CREATE TRIGGER calculate_transaction_price_trigger BEFORE INSERT ON TRANSACTION " +
-                    "FOR EACH ROW BEGIN " +
-                    "DECLARE selling_price DECIMAL(10,2); " +
-                    "DECLARE purchase_price DECIMAL(10,2); " +
-                    "SELECT selling_price INTO selling_price FROM VEHICLE WHERE VEHICLE_ID = NEW.VEHICLE_ID; " +
-                    "SELECT purchase_price INTO purchase_price FROM VEHICLE WHERE VEHICLE_ID = NEW.VEHICLE_ID; " +
-                    "SET NEW.TRANSACTION_PRICE = selling_price - purchase_price; " +
-                    "END;";
-            
-            Statement stmt = conn.createStatement();
-            stmt.executeUpdate(triggerQuery);
-            stmt.close();
-            System.out.println("Transaction price trigger created successfully.");
-        } catch (SQLException ex) {
-            System.out.println("Error creating transaction price trigger: " + ex.getMessage());
-        }
-    }
-private void insertTransactionDetails(String employeeId, int buyerId, String sellerName, int vehicleId, String transactionDate) throws SQLException {
-    // Assuming that transaction price will be calculated by the trigger, so it's not included in the query
-    String insertQuery = "INSERT INTO TRANSACTION (EMPLOYEE_ID, BUYER_ID, SELLER_ID, VEHICLE_ID, TRANSACTION_DATE) VALUES (?, ?, (SELECT RESELLER_ID FROM RESELLER WHERE NAME = ?), ?, ?)";
+
+
+private void insertTransactionDetails(String employeeId, int buyerId, String sellerName, int vehicleId, String transactionDate, double transactionPrice) throws SQLException {
+    // Assuming that transaction price is included in the query
+    String insertQuery = "INSERT INTO TRANSACTION (EMPLOYEE_ID, BUYER_ID, SELLER_ID, VEHICLE_ID, TRANSACTION_DATE, TRANSACTION_PRICE) VALUES (?, ?, (SELECT RESELLER_ID FROM RESELLER WHERE NAME = ?), ?, ?, ?)";
     try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)) {
         insertStmt.setString(1, employeeId);
         insertStmt.setInt(2, buyerId);
         insertStmt.setString(3, sellerName);
         insertStmt.setInt(4, vehicleId);
         insertStmt.setString(5, transactionDate);
+        insertStmt.setDouble(6, transactionPrice); // Set the transaction price
         
         // Execute the insertion query
         insertStmt.executeUpdate();
@@ -95,6 +78,10 @@ private void insertTransactionDetails(String employeeId, int buyerId, String sel
                 throw new SQLException("Failed to retrieve auto-generated TRANSACTION_ID");
             }
         }
+    } catch (SQLException ex) {
+        // Print the SQL error message for debugging
+        ex.printStackTrace();
+        throw ex; // Rethrow the exception to handle it in the calling code
     }
 }
 
@@ -106,14 +93,38 @@ private void updateVehicleAfterTransaction(int vehicleId, int transactionId) thr
         updateStmt.executeUpdate();
     }
 }
-
-private void increaseTransactionCount(String employeeId) throws SQLException {
-    String updateQuery = "UPDATE EMPLOYEE SET TRANSACTION_COUNT = TRANSACTION_COUNT + 1 WHERE EMPLOYEE_ID = ?";
-    try (PreparedStatement updateStmt = conn.prepareStatement(updateQuery)) {
-        updateStmt.setString(1, employeeId);
-        updateStmt.executeUpdate();
+private double getSellingPrice(int vehicleId) throws SQLException {
+    String getPriceQuery = "SELECT SELLING_PRICE FROM VEHICLE WHERE VEHICLE_ID = ?";
+    try (PreparedStatement getPriceStmt = conn.prepareStatement(getPriceQuery)) {
+        getPriceStmt.setInt(1, vehicleId);
+        ResultSet rs = getPriceStmt.executeQuery();
+        if (rs.next()) {
+            return rs.getDouble("SELLING_PRICE");
+        } else {
+            throw new SQLException("Vehicle not found or no selling price available.");
+        }
     }
 }
+
+private double getPurchasePrice(int vehicleId) throws SQLException {
+    String getPriceQuery = "SELECT PURCHASE_PRICE FROM VEHICLE WHERE VEHICLE_ID = ?";
+    try (PreparedStatement getPriceStmt = conn.prepareStatement(getPriceQuery)) {
+        getPriceStmt.setInt(1, vehicleId);
+        ResultSet rs = getPriceStmt.executeQuery();
+        if (rs.next()) {
+            return rs.getDouble("PURCHASE_PRICE");
+        } else {
+            throw new SQLException("Vehicle not found or no purchase price available.");
+        }
+    }
+}
+//private void increaseTransactionCount(String employeeId) throws SQLException {
+//    String updateQuery = "UPDATE EMPLOYEE SET TRANSACTION_COUNT = TRANSACTION_COUNT + 1 WHERE EMPLOYEE_ID = ?";
+//    try (PreparedStatement updateStmt = conn.prepareStatement(updateQuery)) {
+//        updateStmt.setString(1, employeeId);
+//        updateStmt.executeUpdate();
+//    }
+//}
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -143,6 +154,7 @@ private void increaseTransactionCount(String employeeId) throws SQLException {
         sellername = new javax.swing.JTextField();
         BuyButton = new javax.swing.JButton();
         get = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
         Dashboard = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
         Home = new javax.swing.JLabel();
@@ -164,111 +176,129 @@ private void increaseTransactionCount(String employeeId) throws SQLException {
         jPanel1.setBackground(new java.awt.Color(0, 0, 51));
 
         jPanel6.setBackground(new java.awt.Color(0, 51, 102));
+        jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(255, 255, 255));
         jLabel9.setText("Buy Vehicle");
+        jPanel6.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(372, 6, -1, -1));
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 17)); // NOI18N
         jLabel2.setText("Type of vehicle");
+        jPanel6.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 150, 126, -1));
 
-        typeselect.setBackground(new java.awt.Color(255, 102, 51));
-        typeselect.setForeground(new java.awt.Color(255, 255, 255));
+        typeselect.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         typeselect.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Bike", "Car", "Scooter", "Truck" }));
         typeselect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 typeselectActionPerformed(evt);
             }
         });
+        jPanel6.add(typeselect, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 150, 88, 30));
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 17)); // NOI18N
         jLabel3.setText("Buyer ID");
+        jPanel6.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(183, 272, 97, -1));
 
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 17)); // NOI18N
         jLabel4.setText("Buyer name");
+        jPanel6.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(183, 324, -1, -1));
 
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 17)); // NOI18N
         jLabel5.setText("Buyer Phone No.");
+        jPanel6.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(183, 375, -1, -1));
 
-        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 17)); // NOI18N
         jLabel6.setText("Date");
+        jPanel6.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(183, 426, -1, -1));
 
-        Price.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        Price.setForeground(new java.awt.Color(255, 255, 255));
+        Price.setFont(new java.awt.Font("Segoe UI", 1, 17)); // NOI18N
         Price.setText("Price");
+        jPanel6.add(Price, new org.netbeans.lib.awtextra.AbsoluteConstraints(183, 477, -1, -1));
 
-        jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel10.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 17)); // NOI18N
         jLabel10.setText("Vehicle No");
+        jPanel6.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(183, 221, 97, -1));
 
         Vehicleno.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 VehiclenoActionPerformed(evt);
             }
         });
+        jPanel6.add(Vehicleno, new org.netbeans.lib.awtextra.AbsoluteConstraints(392, 216, 203, 33));
 
         buyeraname.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buyeranameActionPerformed(evt);
             }
         });
+        jPanel6.add(buyeraname, new org.netbeans.lib.awtextra.AbsoluteConstraints(392, 319, 203, 33));
 
         buyerid.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buyeridActionPerformed(evt);
             }
         });
+        jPanel6.add(buyerid, new org.netbeans.lib.awtextra.AbsoluteConstraints(392, 267, 203, 33));
 
         buyerphone.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buyerphoneActionPerformed(evt);
             }
         });
+        jPanel6.add(buyerphone, new org.netbeans.lib.awtextra.AbsoluteConstraints(392, 370, 203, 33));
 
         date.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 dateActionPerformed(evt);
             }
         });
+        jPanel6.add(date, new org.netbeans.lib.awtextra.AbsoluteConstraints(392, 421, 203, 33));
 
         price.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 priceActionPerformed(evt);
             }
         });
+        jPanel6.add(price, new org.netbeans.lib.awtextra.AbsoluteConstraints(392, 472, 203, 33));
 
-        jLabel11.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel11.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel11.setFont(new java.awt.Font("Segoe UI", 1, 17)); // NOI18N
         jLabel11.setText("Employee ID");
+        jPanel6.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(183, 528, -1, -1));
 
-        jLabel12.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel12.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel12.setFont(new java.awt.Font("Segoe UI", 1, 17)); // NOI18N
         jLabel12.setText("Seller Name");
+        jPanel6.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(183, 579, -1, -1));
 
         employeeid.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 employeeidActionPerformed(evt);
             }
         });
+        jPanel6.add(employeeid, new org.netbeans.lib.awtextra.AbsoluteConstraints(392, 523, 203, 33));
 
+        sellername.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
         sellername.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 sellernameActionPerformed(evt);
             }
         });
+        jPanel6.add(sellername, new org.netbeans.lib.awtextra.AbsoluteConstraints(392, 574, 203, 33));
 
+        BuyButton.setBackground(new java.awt.Color(0, 0, 0));
+        BuyButton.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        BuyButton.setForeground(new java.awt.Color(255, 255, 255));
         BuyButton.setText("Buy");
         BuyButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 BuyButtonActionPerformed(evt);
             }
         });
+        jPanel6.add(BuyButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(331, 636, 86, 36));
 
+        get.setBackground(new java.awt.Color(0, 0, 0));
+        get.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        get.setForeground(new java.awt.Color(255, 255, 255));
         get.setText("Get");
         get.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -280,95 +310,12 @@ private void increaseTransactionCount(String employeeId) throws SQLException {
                 getActionPerformed(evt);
             }
         });
+        jPanel6.add(get, new org.netbeans.lib.awtextra.AbsoluteConstraints(643, 470, 70, 30));
 
-        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
-        jPanel6.setLayout(jPanel6Layout);
-        jPanel6Layout.setHorizontalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addGap(372, 372, 372)
-                        .addComponent(jLabel9))
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addGap(183, 183, 183)
-                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel6)
-                            .addComponent(Price)
-                            .addComponent(jLabel11)
-                            .addComponent(jLabel12))
-                        .addGap(83, 83, 83)
-                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(typeselect, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(Vehicleno, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(buyeraname, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(buyerid, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(buyerphone, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(date, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel6Layout.createSequentialGroup()
-                                .addComponent(price, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(48, 48, 48)
-                                .addComponent(get))
-                            .addComponent(employeeid, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(sellername, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addGap(331, 331, 331)
-                        .addComponent(BuyButton, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(139, Short.MAX_VALUE))
-        );
-        jPanel6Layout.setVerticalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel9)
-                .addGap(85, 85, 85)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(typeselect, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(27, 27, 27)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel10)
-                    .addComponent(Vehicleno, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(buyerid, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
-                .addGap(19, 19, 19)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(buyeraname, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(buyerphone, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel5))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(date, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(price, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(Price)
-                    .addComponent(get))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(employeeid, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel11))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(sellername, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel12))
-                .addGap(29, 29, 29)
-                .addComponent(BuyButton, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(126, 126, 126))
-        );
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/BGN2.jpg"))); // NOI18N
+        jPanel6.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -10, 860, 740));
 
-        Dashboard.setBackground(new java.awt.Color(255, 102, 51));
+        Dashboard.setBackground(new java.awt.Color(0, 0, 0));
 
         jLabel13.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel13.setForeground(new java.awt.Color(255, 255, 255));
@@ -419,7 +366,7 @@ private void increaseTransactionCount(String employeeId) throws SQLException {
             }
         });
 
-        jLabel14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/DashUser.png"))); // NOI18N
+        jLabel14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/ID.png"))); // NOI18N
 
         warehouse.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         warehouse.setForeground(new java.awt.Color(255, 255, 255));
@@ -466,7 +413,7 @@ private void increaseTransactionCount(String employeeId) throws SQLException {
                                     .addComponent(Home, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(warehouse, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(client, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(0, 51, Short.MAX_VALUE))))
+                                .addGap(0, 0, Short.MAX_VALUE))))
                     .addGroup(DashboardLayout.createSequentialGroup()
                         .addGap(34, 34, 34)
                         .addComponent(jLabel13)
@@ -484,7 +431,7 @@ private void increaseTransactionCount(String employeeId) throws SQLException {
                     .addGroup(DashboardLayout.createSequentialGroup()
                         .addGap(35, 35, 35)
                         .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(36, Short.MAX_VALUE))
         );
         DashboardLayout.setVerticalGroup(
             DashboardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -518,16 +465,15 @@ private void increaseTransactionCount(String employeeId) throws SQLException {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addComponent(Dashboard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(14, 14, 14))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 719, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 12, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 719, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addComponent(Dashboard, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
@@ -535,12 +481,12 @@ private void increaseTransactionCount(String employeeId) throws SQLException {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 1063, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 719, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
@@ -584,32 +530,35 @@ private void increaseTransactionCount(String employeeId) throws SQLException {
 
     private void BuyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BuyButtonActionPerformed
         // TODO add your handling code here:
-       try {
-            int vehicleNo = Integer.parseInt(Vehicleno.getText()); 
-            int buyerId=Integer.parseInt(buyerid.getText()); 
-            String vehicleType = typeselect.getSelectedItem().toString();
-            String employeeId = employeeid.getText();
-            String buyerName = buyeraname.getText();
-            String buyerPhone = buyerphone.getText();
-            String sellerName = sellername.getText();
-            String transactionDate = date.getText();
+        try {
+        int vehicleNo = Integer.parseInt(Vehicleno.getText()); 
+        int buyerId=Integer.parseInt(buyerid.getText()); 
+        String vehicleType = typeselect.getSelectedItem().toString();
+        String employeeId = employeeid.getText();
+        String buyerName = buyeraname.getText();
+        String buyerPhone = buyerphone.getText();
+        String sellerName = sellername.getText();
+        String transactionDate = date.getText();
 
-            if (validateInputs(String.valueOf(vehicleNo), vehicleType, employeeId, buyerName, "", buyerPhone, "", sellerName)) {
-                
-             insertBuyerDetails(vehicleNo,buyerId, buyerName, buyerPhone);
+        if (validateInputs(String.valueOf(vehicleNo), vehicleType, employeeId, buyerName, "", buyerPhone, "", sellerName)) {
+            
+            double sellingPrice = getSellingPrice(vehicleNo);
+            double purchasePrice = getPurchasePrice(vehicleNo);
+             double transactionPrice = sellingPrice - purchasePrice;
+            insertBuyerDetails(vehicleNo,buyerId, buyerName, buyerPhone);
 
-        // Insert transaction details into the transaction table
-        insertTransactionDetails(employeeId, buyerId, sellerName, vehicleNo, transactionDate);
+            // Insert transaction details into the transaction table
+            insertTransactionDetails(employeeId, buyerId, sellerName, vehicleNo, transactionDate,transactionPrice);
 
-        // Increase transaction_count in the employee table for the specific employee
-        increaseTransactionCount(employeeId);
-        
-            } else {
-                JOptionPane.showMessageDialog(this, "Please fill all required fields.");
-            }
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+            // Increase transaction_count in the employee table for the specific employee
+            //increaseTransactionCount(employeeId);
+           JOptionPane.showMessageDialog(this, "Purchase successful!");
+        } else {
+            JOptionPane.showMessageDialog(this, "Please fill all required fields.");
         }
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+    }
     }//GEN-LAST:event_BuyButtonActionPerformed
 
     private void typeselectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_typeselectActionPerformed
@@ -668,27 +617,6 @@ private void increaseTransactionCount(String employeeId) throws SQLException {
     }//GEN-LAST:event_clientMouseClicked
 
     private void getActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getActionPerformed
-        // TODO add your handling code here:                        
-//     try {
-//        int vehicleNo = Integer.parseInt(Vehicleno.getText());
-//        String getPriceQuery = "SELECT SELLING_PRICE FROM VEHICLE WHERE VEHICLE_ID = ?";
-//        try (PreparedStatement getPriceStmt = conn.prepareStatement(getPriceQuery)) {
-//            getPriceStmt.setInt(1, vehicleNo);
-//            ResultSet rs = getPriceStmt.executeQuery();
-//
-//            if (rs.next()) {
-//                double sellingPrice = rs.getDouble("SELLING_PRICE");
-//                price.setText(String.valueOf(sellingPrice));
-//            } else {
-//                JOptionPane.showMessageDialog(this, "Vehicle not found or no price available.", "Price Error", JOptionPane.ERROR_MESSAGE);
-//            }
-//        }
-//    } catch (NumberFormatException ex) {
-//        JOptionPane.showMessageDialog(this, "Invalid vehicle number format. Please enter a valid integer.", "Input Error", JOptionPane.ERROR_MESSAGE);
-//    } catch (SQLException ex) {
-//        Logger.getLogger(Transactions.class.getName()).log(Level.SEVERE, null, ex);
-//        JOptionPane.showMessageDialog(this, "Error retrieving price.", "Price Error", JOptionPane.ERROR_MESSAGE);
-//    }
 
 
     }//GEN-LAST:event_getActionPerformed
@@ -731,31 +659,7 @@ private void increaseTransactionCount(String employeeId) throws SQLException {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Transactions.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Transactions.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Transactions.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Transactions.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
+        
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new Transactions().setVisible(true);
@@ -780,6 +684,7 @@ private void increaseTransactionCount(String employeeId) throws SQLException {
     private javax.swing.JTextField date;
     private javax.swing.JTextField employeeid;
     private javax.swing.JButton get;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;

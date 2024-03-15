@@ -42,7 +42,7 @@ public class Warehouse extends javax.swing.JFrame {
     try {
         String query = "SELECT w.WAREHOUSE_ID, w.WAREHOUSE_NAME, w.LOCATION, w.CAPACITY, COUNT(v.VEHICLE_ID) AS TOTAL " +
                        "FROM WAREHOUSE w " +
-                       "LEFT JOIN VEHICLE v ON w.WAREHOUSE_ID = v.WAREHOUSE_ID " +
+                       "LEFT JOIN VEHICLE v ON w.WAREHOUSE_ID = v.WAREHOUSE_ID AND V.STATUS='AVAILABLE'" +
                        "GROUP BY w.WAREHOUSE_ID, w.WAREHOUSE_NAME, w.LOCATION, w.CAPACITY";
         pat = conn.prepareStatement(query);
         rs = pat.executeQuery();
@@ -74,7 +74,7 @@ public class Warehouse extends javax.swing.JFrame {
 
     private void loadVehicleDetails(int warehouseId) {
         try {
-            String query = "SELECT * FROM VEHICLE WHERE WAREHOUSE_ID = ?";
+            String query = "SELECT * FROM VEHICLE WHERE WAREHOUSE_ID = ? AND STATUS='AVAILABLE'";
             pat = conn.prepareStatement(query);
             pat.setInt(1, warehouseId);
             rs = pat.executeQuery();
@@ -118,7 +118,6 @@ public class Warehouse extends javax.swing.JFrame {
         Warehousetable = new javax.swing.JTable();
         Insert = new javax.swing.JButton();
         Update = new javax.swing.JButton();
-        Delete = new javax.swing.JButton();
         Clear = new javax.swing.JButton();
         Knowmore = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -131,12 +130,13 @@ public class Warehouse extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         name = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(0, 0, 51));
 
-        Dashboard.setBackground(new java.awt.Color(255, 102, 51));
+        Dashboard.setBackground(new java.awt.Color(0, 0, 0));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
@@ -187,7 +187,7 @@ public class Warehouse extends javax.swing.JFrame {
             }
         });
 
-        jLabel11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/DashUser.png"))); // NOI18N
+        jLabel11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/ID.png"))); // NOI18N
 
         warehouse.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         warehouse.setForeground(new java.awt.Color(255, 255, 255));
@@ -281,10 +281,11 @@ public class Warehouse extends javax.swing.JFrame {
         );
 
         jPanel6.setBackground(new java.awt.Color(0, 51, 102));
+        jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Warehouse");
+        jPanel6.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 0, 142, 49));
 
         Warehousetable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -299,13 +300,22 @@ public class Warehouse extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(Warehousetable);
 
+        jPanel6.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 55, 609, 313));
+
+        Insert.setBackground(new java.awt.Color(0, 0, 0));
+        Insert.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        Insert.setForeground(new java.awt.Color(255, 255, 255));
         Insert.setText("Insert");
         Insert.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 InsertActionPerformed(evt);
             }
         });
+        jPanel6.add(Insert, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 300, -1, 29));
 
+        Update.setBackground(new java.awt.Color(0, 0, 0));
+        Update.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        Update.setForeground(new java.awt.Color(255, 255, 255));
         Update.setText("Update");
         Update.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -317,21 +327,22 @@ public class Warehouse extends javax.swing.JFrame {
                 UpdateActionPerformed(evt);
             }
         });
+        jPanel6.add(Update, new org.netbeans.lib.awtextra.AbsoluteConstraints(830, 300, -1, 29));
 
-        Delete.setText("Delete");
-        Delete.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                DeleteMouseClicked(evt);
-            }
-        });
-
+        Clear.setBackground(new java.awt.Color(0, 0, 0));
+        Clear.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        Clear.setForeground(new java.awt.Color(255, 255, 255));
         Clear.setText("Clear");
         Clear.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 ClearMouseClicked(evt);
             }
         });
+        jPanel6.add(Clear, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 300, -1, 28));
 
+        Knowmore.setBackground(new java.awt.Color(0, 0, 0));
+        Knowmore.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        Knowmore.setForeground(new java.awt.Color(255, 255, 255));
         Knowmore.setText("Know more");
         Knowmore.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -343,6 +354,7 @@ public class Warehouse extends javax.swing.JFrame {
                 KnowmoreActionPerformed(evt);
             }
         });
+        jPanel6.add(Knowmore, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 250, 99, 33));
 
         vehciletable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -357,120 +369,42 @@ public class Warehouse extends javax.swing.JFrame {
         ));
         jScrollPane2.setViewportView(vehciletable);
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        jPanel6.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 386, 860, 263));
+        jPanel6.add(location, new org.netbeans.lib.awtextra.AbsoluteConstraints(748, 157, 118, 30));
+        jPanel6.add(capacity, new org.netbeans.lib.awtextra.AbsoluteConstraints(748, 205, 118, 30));
+        jPanel6.add(warehouseid, new org.netbeans.lib.awtextra.AbsoluteConstraints(748, 55, 118, 30));
+
+        jLabel3.setBackground(new java.awt.Color(0, 0, 0));
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel3.setText("ID");
+        jPanel6.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 59, 30, -1));
 
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel4.setBackground(new java.awt.Color(0, 0, 0));
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel4.setText("Location");
+        jPanel6.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 161, -1, -1));
 
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel5.setBackground(new java.awt.Color(0, 0, 0));
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel5.setText("Capacity");
+        jPanel6.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 209, -1, -1));
 
         name.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 nameActionPerformed(evt);
             }
         });
+        jPanel6.add(name, new org.netbeans.lib.awtextra.AbsoluteConstraints(748, 103, 118, 29));
 
-        jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel6.setBackground(new java.awt.Color(0, 0, 0));
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel6.setText("Name");
+        jPanel6.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 106, -1, -1));
 
-        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
-        jPanel6.setLayout(jPanel6Layout);
-        jPanel6Layout.setHorizontalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(370, 370, 370))
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel6Layout.createSequentialGroup()
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 609, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel6Layout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                                                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                    .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                    .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.LEADING))
-                                                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addGroup(jPanel6Layout.createSequentialGroup()
-                                                            .addGap(24, 24, 24)
-                                                            .addComponent(warehouseid, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                            .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                                .addComponent(name, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                .addComponent(capacity, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                                                        .addGap(24, 24, 24)
-                                                        .addComponent(location, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                                                .addComponent(Knowmore, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(63, 63, 63))))
-                                    .addGroup(jPanel6Layout.createSequentialGroup()
-                                        .addGap(27, 27, 27)
-                                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(Insert, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(Delete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 52, Short.MAX_VALUE)
-                                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(Clear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(Update, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                        .addGap(28, 28, 28))))
-                            .addComponent(jScrollPane2))
-                        .addContainerGap())))
-        );
-        jPanel6Layout.setVerticalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(warehouseid, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(name, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel6))
-                        .addGap(25, 25, 25)
-                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(location, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel4))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(capacity, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel5))
-                        .addGap(18, 18, 18)
-                        .addComponent(Knowmore, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(Update, javax.swing.GroupLayout.DEFAULT_SIZE, 29, Short.MAX_VALUE)
-                            .addComponent(Insert, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(17, 17, 17)
-                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(Clear, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(Delete, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(1, 1, 1))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
+        jLabel7.setBackground(new java.awt.Color(0, 0, 0));
+        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/BGN2.jpg"))); // NOI18N
+        jPanel6.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 910, 650));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -606,33 +540,6 @@ public class Warehouse extends javax.swing.JFrame {
             }
     }//GEN-LAST:event_UpdateMouseClicked
 
-    private void DeleteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_DeleteMouseClicked
-        // TODO add your handling code here:
-        int selectedRow = Warehousetable.getSelectedRow();
-        if (selectedRow != -1) {
-        int confirmDialog = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this warehouse?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
-        if (confirmDialog == JOptionPane.YES_OPTION) {
-        try {
-            String query = "DELETE FROM WAREHOUSE WHERE WAREHOUSE_ID = ?";
-            pat = conn.prepareStatement(query);
-            pat.setInt(1, Integer.parseInt(warehouseid.getText()));
-            int deletedRows = pat.executeUpdate();
-            if (deletedRows > 0) {
-                JOptionPane.showMessageDialog(this, "Warehouse deleted successfully.");
-                loadWarehouseDetails(); // Refresh table data
-                clearFields(); // Clear input fields
-            } else {
-                JOptionPane.showMessageDialog(this, "Failed to delete warehouse.");
-            }
-        } catch (SQLException | NumberFormatException ex) {
-            Logger.getLogger(Warehouse.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-} else {
-    JOptionPane.showMessageDialog(this, "Please select a warehouse to delete.");
-}
-    }//GEN-LAST:event_DeleteMouseClicked
-
     private void ClearMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ClearMouseClicked
         // TODO add your handling code here:
         clearFields();
@@ -690,7 +597,6 @@ public class Warehouse extends javax.swing.JFrame {
     private javax.swing.JButton Clear;
     private javax.swing.JLabel CurrentVehicle;
     private javax.swing.JPanel Dashboard;
-    private javax.swing.JButton Delete;
     private javax.swing.JLabel Home;
     private javax.swing.JButton Insert;
     private javax.swing.JButton Knowmore;
@@ -708,6 +614,7 @@ public class Warehouse extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
