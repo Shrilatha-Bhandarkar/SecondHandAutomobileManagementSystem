@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
@@ -20,36 +21,9 @@ public class ServiceDetails extends javax.swing.JFrame {
         initComponents();
         this.serviceType= serviceType;
         Connect();
-        displayServiceData(serviceType);
+        loadData(serviceType);
         
-        servicestable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-        public void valueChanged(ListSelectionEvent e) {
-        if (!e.getValueIsAdjusting()) {
-            int selectedRow = servicestable.getSelectedRow();
-            if (selectedRow != -1) { // If a row is selected
-                // Get the data from the selected row
-                Object serviceId = servicestable.getValueAt(selectedRow, 0);
-                Object vehicleId = servicestable.getValueAt(selectedRow, 1);
-                Object providerId = servicestable.getValueAt(selectedRow, 2);
-                Object typeValue = servicestable.getValueAt(selectedRow, 5);
-                Object dateIn = servicestable.getValueAt(selectedRow, 4); 
-                Object dueDate = servicestable.getValueAt(selectedRow, 3); 
-                Object costValue = servicestable.getValueAt(selectedRow, 6);
-                Object statusValue = servicestable.getValueAt(selectedRow, 7);
-                
-                // Set the data to corresponding text fields or other components
-                service_id.setText(serviceId.toString());
-                provider_id.setText(providerId.toString());
-                vehicle_id.setText(vehicleId.toString());
-                type.setText(typeValue.toString());
-                cost.setText(costValue.toString());
-                datein.setText(dateIn.toString());
-                duedate.setText(dueDate.toString());
-                status.setText(statusValue.toString());
-            }
-        }
-    }
-});
+
 
     }
      Connection conn;
@@ -59,7 +33,7 @@ public class ServiceDetails extends javax.swing.JFrame {
     public void Connect(){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn=DriverManager.getConnection("jdbc:mysql://localhost/shams","root","");
+            conn=DriverManager.getConnection("jdbc:mysql://localhost/shamsdemo","root"," ");
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
         }catch(SQLException ex){
@@ -67,7 +41,7 @@ public class ServiceDetails extends javax.swing.JFrame {
         }
         
     }
-   private void displayServiceData(String serviceType) {
+    private void loadData(String serviceType) {
     try {
         String query = "";
 
@@ -92,22 +66,58 @@ public class ServiceDetails extends javax.swing.JFrame {
 
             while (rs.next()) {
                 Object[] row = new Object[8]; // Assuming there are 8 columns in the services table
-                for (int i = 0; i < row.length; i++) {
-                    row[i] = rs.getObject(i + 1);
-                }
+                row[0] = rs.getInt("SERVICE_ID");
+                row[1] = rs.getString("REG_NO");
+                row[2] = rs.getInt("SERVICE_PROVIDER_ID");
+                row[3] = rs.getDate("DUE_DATE");
+                row[4] = rs.getDate("DATE");
+                row[5] = rs.getString("SERVICE_TYPE");
+                row[6] = rs.getBigDecimal("COST");
+                row[7] = rs.getString("STATUS");
                 model.addRow(row);
             }
+            
+            // Add ListSelectionListener to the table
+            servicestable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+                public void valueChanged(ListSelectionEvent e) {
+                    if (!e.getValueIsAdjusting()) {
+                        int selectedRow = servicestable.getSelectedRow();
+                        if (selectedRow != -1) { // If a row is selected
+                            // Get the data from the selected row
+                            Object serviceId = servicestable.getValueAt(selectedRow, 0);
+                            Object regNo = servicestable.getValueAt(selectedRow, 1);
+                            Object providerId = servicestable.getValueAt(selectedRow, 2);
+                            Object dueDate = servicestable.getValueAt(selectedRow, 3); 
+                            Object dateIn = servicestable.getValueAt(selectedRow, 4); 
+                            Object serviceType = servicestable.getValueAt(selectedRow, 5);
+                            Object costValue = servicestable.getValueAt(selectedRow, 6);
+                            Object statusValue = servicestable.getValueAt(selectedRow, 7);
+                            
+                            // Set the data to corresponding text fields or other components
+                            service_id.setText(serviceId.toString());
+                            regno.setText(regNo.toString());
+                            provider_id.setText(providerId.toString());
+                            duedate.setText(dueDate.toString());
+                            datein.setText(dateIn.toString());
+                            type.setText(serviceType.toString());
+                            cost.setText(costValue.toString());
+                            status.setText(statusValue.toString());
+                        }
+                    }
+                }
+            });
         }
     } catch (SQLException ex) {
-        // Log an error message for SQL exceptions
         Logger.getLogger(ServiceDetails.class.getName()).log(Level.SEVERE, "Error retrieving service data", ex);
     }
 }
+
+
    
    private void clearFields() {
         provider_id.setText("");
         service_id.setText("");
-        vehicle_id.setText("");
+        regno.setText("");
         type.setText("");
         cost.setText("");
         datein.setText("");
@@ -136,7 +146,7 @@ public class ServiceDetails extends javax.swing.JFrame {
         servicestable = new javax.swing.JTable();
         service_id = new javax.swing.JTextField();
         provider_id = new javax.swing.JTextField();
-        vehicle_id = new javax.swing.JTextField();
+        regno = new javax.swing.JTextField();
         type = new javax.swing.JTextField();
         status = new javax.swing.JTextField();
         datein = new javax.swing.JTextField();
@@ -154,6 +164,7 @@ public class ServiceDetails extends javax.swing.JFrame {
         Update = new javax.swing.JButton();
         Delete = new javax.swing.JButton();
         Clear = new javax.swing.JButton();
+        get = new javax.swing.JButton();
         jLabel12 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -315,7 +326,7 @@ public class ServiceDetails extends javax.swing.JFrame {
                 {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Service_ID", "Vehicle_ID", "ServiceProviderID", "DueDate", "Date In", "Service_Type", "Cost", "Status"
+                "Service_ID", "Reg No", "ServiceProviderID", "DueDate", "Date In", "Service_Type", "Cost", "Status"
             }
         ));
         jScrollPane1.setViewportView(servicestable);
@@ -323,7 +334,7 @@ public class ServiceDetails extends javax.swing.JFrame {
         jPanel6.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(19, 22, 884, 315));
         jPanel6.add(service_id, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 350, 138, 32));
         jPanel6.add(provider_id, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 410, 138, 32));
-        jPanel6.add(vehicle_id, new org.netbeans.lib.awtextra.AbsoluteConstraints(696, 355, 138, 32));
+        jPanel6.add(regno, new org.netbeans.lib.awtextra.AbsoluteConstraints(696, 355, 138, 32));
         jPanel6.add(type, new org.netbeans.lib.awtextra.AbsoluteConstraints(696, 413, 138, 32));
         jPanel6.add(status, new org.netbeans.lib.awtextra.AbsoluteConstraints(696, 531, 138, 32));
         jPanel6.add(datein, new org.netbeans.lib.awtextra.AbsoluteConstraints(696, 471, 138, 32));
@@ -335,7 +346,7 @@ public class ServiceDetails extends javax.swing.JFrame {
         jPanel6.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 350, 115, -1));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
-        jLabel3.setText("Vehcile ID");
+        jLabel3.setText("Reg No");
         jPanel6.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 360, 90, -1));
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
@@ -406,6 +417,17 @@ public class ServiceDetails extends javax.swing.JFrame {
         });
         jPanel6.add(Clear, new org.netbeans.lib.awtextra.AbsoluteConstraints(749, 583, 80, 40));
 
+        get.setBackground(new java.awt.Color(0, 0, 0));
+        get.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        get.setForeground(new java.awt.Color(255, 255, 255));
+        get.setText("Get");
+        get.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                getMouseClicked(evt);
+            }
+        });
+        jPanel6.add(get, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 410, 60, -1));
+
         jLabel12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/fin.jpg"))); // NOI18N
         jPanel6.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(-5, -4, 940, 650));
 
@@ -423,8 +445,7 @@ public class ServiceDetails extends javax.swing.JFrame {
             .addComponent(Dashboard, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0))
+                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -495,11 +516,11 @@ public class ServiceDetails extends javax.swing.JFrame {
         int selectedRow = servicestable.getSelectedRow();
         if (selectedRow != -1) {
             try {
-                String query = "UPDATE service SET SERVICE_PROVIDER_ID = ?, VEHICLE_ID = ?,  DUE_DATE = ?,DATE = ?,  SERVICE_TYPE = ?, COST = ?,STATUS = ? WHERE SERVICE_ID = ?";
+                String query = "UPDATE service SET SERVICE_PROVIDER_ID = ?, REG_NO = ?,  DUE_DATE = ?,DATE = ?,  SERVICE_TYPE = ?, COST = ?,STATUS = ? WHERE SERVICE_ID = ?";
                 pat = conn.prepareStatement(query);
 
                 pat.setString(1, provider_id.getText());
-                pat.setInt(2, Integer.parseInt(vehicle_id.getText()));
+                pat.setString(2, regno.getText());
                 pat.setString(3, duedate.getText());
                 pat.setString(4, datein.getText());
                 pat.setString(5, type.getText());
@@ -509,9 +530,7 @@ public class ServiceDetails extends javax.swing.JFrame {
 
                 int updatedRows = pat.executeUpdate();
                 if (updatedRows > 0) {
-                    // Refresh table data
-                    displayServiceData(serviceType);
-                    // Clear input fields
+                    loadData(serviceType);
                     clearFields();
                 } else {
                     System.out.println("Failed to update data.");
@@ -536,7 +555,7 @@ public class ServiceDetails extends javax.swing.JFrame {
                 int deletedRows = pat.executeUpdate();
                 if (deletedRows > 0) {
                     // Refresh table data
-                    displayServiceData(serviceType);
+                    loadData(serviceType);
                     // Clear input fields
                     clearFields();
                 } else {
@@ -556,29 +575,22 @@ public class ServiceDetails extends javax.swing.JFrame {
     private void insertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertActionPerformed
         // TODO add your handling code here:
         try {
-        // Prepare the insertion query
-        String query = "INSERT INTO service (SERVICE_PROVIDER_ID, VEHICLE_ID, DUE_DATE, DATE, SERVICE_TYPE, COST, STATUS) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO service (SERVICE_PROVIDER_ID, REG_NO, DUE_DATE, DATE, SERVICE_TYPE, COST, STATUS) VALUES (?, ?, ?, ?, ?, ?, ?)";
         
-        // Create a PreparedStatement for the query
         pat = conn.prepareStatement(query);
         
-        // Set the values for the parameters in the query
         pat.setString(1, provider_id.getText());
-        pat.setInt(2, Integer.parseInt(vehicle_id.getText()));
+        pat.setString(2, regno.getText());
         pat.setString(3, duedate.getText());
         pat.setString(4, datein.getText());
         pat.setString(5, type.getText());
         pat.setString(6, cost.getText());
-        pat.setString(7, status.getText()); // Assuming status is taken from the input field
+        pat.setString(7, status.getText());
         
-        // Execute the insertion query
         int insertedRows = pat.executeUpdate();
         
-        // Check if insertion was successful
         if (insertedRows > 0) {
-            // Refresh table data
-            displayServiceData(serviceType);
-            // Clear input fields
+            loadData(serviceType);
             clearFields();
         } else {
             System.out.println("Failed to insert data.");
@@ -595,9 +607,36 @@ public class ServiceDetails extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_jLabel10MouseClicked
 
-    /**
-     * @param args the command line arguments
-     */
+    private void getMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_getMouseClicked
+        // TODO add your handling code here:
+     String serviceProviderId = provider_id.getText();
+
+    if (!serviceProviderId.isEmpty()) {
+        try {
+            // Query to retrieve the service type based on the service provider ID
+            String query = "SELECT SERVICE_TYPE FROM SERVICE_PROVIDER WHERE SERVICE_PROVIDER_ID = ?";
+            pat = conn.prepareStatement(query);
+            pat.setString(1, serviceProviderId);
+            rs = pat.executeQuery();
+            
+            if (rs.next()) {
+                String serviceType = rs.getString("SERVICE_TYPE");
+                
+                // Set the retrieved values to the corresponding text fields
+                type.setText(serviceType);  // Corrected the order
+            } else {
+                JOptionPane.showMessageDialog(this, "No service type found for the provided service provider ID.");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ServiceDetails.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+        }
+    } else {
+        JOptionPane.showMessageDialog(this, "Please enter a service provider ID.");
+    }
+    }//GEN-LAST:event_getMouseClicked
+
+  
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -651,6 +690,7 @@ public class ServiceDetails extends javax.swing.JFrame {
     private javax.swing.JTextField cost;
     private javax.swing.JTextField datein;
     private javax.swing.JTextField duedate;
+    private javax.swing.JButton get;
     private javax.swing.JButton insert;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -668,11 +708,11 @@ public class ServiceDetails extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField provider_id;
+    private javax.swing.JTextField regno;
     private javax.swing.JTextField service_id;
     private javax.swing.JTable servicestable;
     private javax.swing.JTextField status;
     private javax.swing.JTextField type;
-    private javax.swing.JTextField vehicle_id;
     private javax.swing.JLabel warehouse;
     // End of variables declaration//GEN-END:variables
 }

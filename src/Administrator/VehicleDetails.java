@@ -46,7 +46,7 @@ public class VehicleDetails extends javax.swing.JFrame {
     public void Connect(){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn=DriverManager.getConnection("jdbc:mysql://localhost/shams","root","");
+            conn=DriverManager.getConnection("jdbc:mysql://localhost/shamsdemo","root"," ");
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
         }catch(SQLException ex){
@@ -57,9 +57,9 @@ public class VehicleDetails extends javax.swing.JFrame {
 
     private void loadData(String vehicleType) {
     try {
-        String sql = "SELECT V.VEHICLE_ID, V.MODEL, V.COMPANY, V.MILEAGE, V.COLOUR, V.YEAR, V.SELLING_PRICE,R.NAME AS SELLER_NAME, R.PHONE AS SELLER_PHONE " +
+        String sql = "SELECT V.VEHICLE_ID, V.MODEL, V.COMPANY, V.MILEAGE, V.COLOUR, V.YEAR, V.SELLING_PRICE,R.NAME AS SELLER_NAME, R.PHONE AS SELLER_PHONE,V.REG_NO " +
                      "FROM VEHICLE V " +
-                     "JOIN RESELLER R ON V.VEHICLE_ID = R.VEHICLE_ID " +
+                     "JOIN RESELLER R ON V.REG_NO = R.REG_NO " +
                      "WHERE V.TYPE = ? AND STATUS='AVAILABLE'";
         pat = conn.prepareStatement(sql);
         pat.setString(1, vehicleType);
@@ -69,7 +69,7 @@ public class VehicleDetails extends javax.swing.JFrame {
         model.setRowCount(0); // Clear the existing table data
         
         while(rs.next()){
-            Object[] row = new Object[10]; // 10 columns are selected from the database
+            Object[] row = new Object[11]; // 10 columns are selected from the database
             row[0] = rs.getInt("VEHICLE_ID");
             row[1] = rs.getString("MODEL");
             row[2] = rs.getString("COMPANY");
@@ -78,7 +78,8 @@ public class VehicleDetails extends javax.swing.JFrame {
             row[5] = rs.getInt("YEAR");
             row[6] = rs.getBigDecimal("SELLING_PRICE");
             row[7] = rs.getString("SELLER_PHONE");
-            row[8] = rs.getString("SELLER_NAME"); // Seller Name
+            row[8] = rs.getString("SELLER_NAME"); 
+            row[9] = rs.getString("REG_NO"); 
              // Seller Phone
             model.addRow(row);
         }
@@ -99,8 +100,9 @@ public class VehicleDetails extends javax.swing.JFrame {
             String color = TableDetails.getValueAt(row, 4).toString();
             int year = Integer.parseInt(TableDetails.getValueAt(row, 5).toString());
             BigDecimal price = (BigDecimal) TableDetails.getValueAt(row, 6);
+            String regNo = TableDetails.getValueAt(row, 9).toString(); 
             
-            // Set the data to the text fields
+            
             modelfield.setText(model);
             companyfield.setText(company);
             mileagefield.setText(String.valueOf(mileage));
@@ -109,25 +111,26 @@ public class VehicleDetails extends javax.swing.JFrame {
             sprice.setText(price.toString());
             veh_id.setText(String.valueOf(vehicleId));
             
-            // Retrieve additional data from the database
-            String vehicleQuery = "SELECT VIN, PURCHASE_PRICE, WAREHOUSE_ID FROM VEHICLE WHERE VEHICLE_ID = ?";
+            
+            register.setText(regNo);
+            
+            
+            String vehicleQuery = "SELECT PURCHASE_PRICE, WAREHOUSE_ID FROM VEHICLE WHERE REG_NO = ?";
             pat = conn.prepareStatement(vehicleQuery);
-            pat.setInt(1, vehicleId);
+            pat.setString(1, regNo);
             ResultSet vehicleResult = pat.executeQuery();
             
             if (vehicleResult.next()) {
-                String vinValue = vehicleResult.getString("VIN");
                 BigDecimal purchasePrice = vehicleResult.getBigDecimal("PURCHASE_PRICE");
                 int warehouseIdValue = vehicleResult.getInt("WAREHOUSE_ID");
                 
-                vin.setText(vinValue);
                 pprice.setText(purchasePrice.toString());
                 warehouseid.setText(String.valueOf(warehouseIdValue));
             }
             
-            String sellerQuery = "SELECT RESELLER_ID, NAME, PHONE FROM RESELLER WHERE VEHICLE_ID = ?";
+            String sellerQuery = "SELECT RESELLER_ID, NAME, PHONE FROM RESELLER WHERE REG_NO = ?";
             pat = conn.prepareStatement(sellerQuery);
-            pat.setInt(1, vehicleId);
+            pat.setString(1, regNo);
             ResultSet sellerResult = pat.executeQuery();
             
             if (sellerResult.next()) {
@@ -145,117 +148,130 @@ public class VehicleDetails extends javax.swing.JFrame {
     }
 }
 
-// Inside the constructor or initialization method where you set up the MouseListener
+
+
 
    private void insertData() {
     try {
         // Insert data into VEHICLE table
-        String insertVehicleQuery = "INSERT INTO VEHICLE (VEHICLE_ID, COMPANY, TYPE, MILEAGE, COLOUR, VIN, MODEL, YEAR, STATUS, PURCHASE_PRICE, SELLING_PRICE, WAREHOUSE_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        pat = conn.prepareStatement(insertVehicleQuery);
-        pat.setInt(1, Integer.parseInt(veh_id.getText()));
-        pat.setString(2, companyfield.getText());
-        pat.setString(3, vehicleType);
-        pat.setInt(4, Integer.parseInt(mileagefield.getText()));
-        pat.setString(5, colorfield.getText());
-        pat.setString(6, vin.getText());
-        pat.setString(7, modelfield.getText());
-        pat.setInt(8, Integer.parseInt(yearfield.getText()));
-        pat.setString(9, "AVAILABLE");
-        pat.setBigDecimal(10, new BigDecimal(pprice.getText()));
-        pat.setBigDecimal(11, new BigDecimal(sprice.getText()));
-        pat.setInt(12, Integer.parseInt(warehouseid.getText()));
+        String insertVehicleQuery = "INSERT INTO VEHICLE (COMPANY, TYPE, MILEAGE, COLOUR, REG_NO, MODEL, YEAR, STATUS, PURCHASE_PRICE, SELLING_PRICE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        pat = conn.prepareStatement(insertVehicleQuery, Statement.RETURN_GENERATED_KEYS);
+        pat.setString(1, companyfield.getText());
+        pat.setString(2, vehicleType);
+        pat.setInt(3, Integer.parseInt(mileagefield.getText()));
+        pat.setString(4, colorfield.getText());
+        pat.setString(5, register.getText());
+        pat.setString(6, modelfield.getText());
+        pat.setInt(7, Integer.parseInt(yearfield.getText()));
+        pat.setString(8, "AVAILABLE");
+        pat.setBigDecimal(9, new BigDecimal(pprice.getText()));
+        pat.setBigDecimal(10, new BigDecimal(sprice.getText()));
 
-        pat.executeUpdate();
+        int affectedRows = pat.executeUpdate();
+
+        if (affectedRows == 0) {
+            throw new SQLException("Inserting vehicle failed, no rows affected.");
+        }
+
+        // Retrieve the auto-generated VEHICLE_ID
+        try (ResultSet generatedKeys = pat.getGeneratedKeys()) {
+            if (generatedKeys.next()) {
+                int vehicleId = generatedKeys.getInt(1);
+                JOptionPane.showMessageDialog(null, "Data inserted into VEHICLE successfully! Vehicle ID: " + vehicleId);
+            } else {
+                throw new SQLException("Failed to retrieve auto-generated VEHICLE_ID.");
+            }
+        }
 
         // Insert data into RESELLER table
-        String insertResellerQuery = "INSERT INTO RESELLER (RESELLER_ID, VEHICLE_ID, NAME, PHONE) VALUES (?, ?, ?, ?)";
+        String insertResellerQuery = "INSERT INTO RESELLER (REG_NO, NAME, PHONE) VALUES (?, ?, ?)";
         pat = conn.prepareStatement(insertResellerQuery);
-        pat.setInt(1, Integer.parseInt(sellerid.getText())); // Convert text to int
-        pat.setInt(2, Integer.parseInt(veh_id.getText()));
-        pat.setString(3, sellername.getText());
-        pat.setString(4, sellerphone.getText());
+        pat.setString(1, register.getText());
+        pat.setString(2, sellername.getText());
+        pat.setString(3, sellerphone.getText());
 
         int rowsAffected = pat.executeUpdate();
 
         if (rowsAffected > 0) {
-         JOptionPane.showMessageDialog(null, "Data inserted into RESELLER successfully!");
+            JOptionPane.showMessageDialog(null, "Data inserted into RESELLER successfully!");
         } else {
             JOptionPane.showMessageDialog(null, "Failed to insert data into RESELLER!");
         }
 
-        JOptionPane.showMessageDialog(null, "Data inserted successfully!");
-        
         // Reload table data
         loadData(vehicleType);
     } catch (SQLException ex) {
-        ex.printStackTrace(); // Print the stack trace of the exception
+        ex.printStackTrace();
         JOptionPane.showMessageDialog(null, "Error: Failed to insert data. See console for details.");
     }
 }
+
 private void updateData() {
     try {
-        // Update data in VEHICLE table
-        String updateVehicleQuery = "UPDATE VEHICLE SET VIN=?, COMPANY=?, MODEL=?, MILEAGE=?, COLOUR=?, YEAR=?, PURCHASE_PRICE=? WHERE VEHICLE_ID=?";
+        
+        String updateVehicleQuery = "UPDATE VEHICLE SET COMPANY=?, MODEL=?, MILEAGE=?, COLOUR=?, YEAR=?, PURCHASE_PRICE=?, WAREHOUSE_ID=? WHERE REG_NO=?";
         pat = conn.prepareStatement(updateVehicleQuery);
-        pat.setString(1, vin.getText());
-        pat.setString(2, companyfield.getText());
-        pat.setString(3, modelfield.getText());
-        pat.setInt(4, Integer.parseInt(mileagefield.getText()));
-        pat.setString(5, colorfield.getText());
-        pat.setInt(6, Integer.parseInt(yearfield.getText()));
-        pat.setBigDecimal(7, new BigDecimal(pprice.getText()));
-        pat.setInt(8, Integer.parseInt(veh_id.getText()));
-        
+        pat.setString(1, companyfield.getText());
+        pat.setString(2, modelfield.getText());
+        pat.setInt(3, Integer.parseInt(mileagefield.getText()));
+        pat.setString(4, colorfield.getText());
+        pat.setInt(5, Integer.parseInt(yearfield.getText()));
+        pat.setBigDecimal(6, new BigDecimal(pprice.getText()));     
+        pat.setInt(7, Integer.parseInt(warehouseid.getText()));
+        pat.setString(8, register.getText());
+
         pat.executeUpdate();
-        
-        // Update data in RESELLER table
-        String updateResellerQuery = "UPDATE RESELLER SET NAME=?, PHONE=? WHERE VEHICLE_ID=?";
+
+       
+        String updateResellerQuery = "UPDATE RESELLER SET NAME=?, PHONE=? WHERE REG_NO=?";
         pat = conn.prepareStatement(updateResellerQuery);
         pat.setString(1, sellername.getText());
         pat.setString(2, sellerphone.getText());
-        pat.setInt(3, Integer.parseInt(veh_id.getText()));
-        
+        pat.setString(3, register.getText());
+
         pat.executeUpdate();
         
-        JOptionPane.showMessageDialog(null, "Data updated successfully!");
         
-        // Reload data into the table after updating
+        JOptionPane.showMessageDialog(null, "Data updated successfully!");
+
+        
+        loadData(vehicleType);
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(null, "Error: Failed to update data. See console for details.");
+    }
+}
+
+
+
+private void deleteData() {
+    try {
+        String vin = register.getText();
+        
+        // Delete data from RESELLER table
+        String deleteResellerQuery = "DELETE FROM RESELLER WHERE REG_NO=?";
+        pat = conn.prepareStatement(deleteResellerQuery);
+        pat.setString(1, vin);
+        pat.executeUpdate();
+        
+        // Delete data from VEHICLE table
+        String deleteVehicleQuery = "DELETE FROM VEHICLE WHERE REG_NO=?";
+        pat = conn.prepareStatement(deleteVehicleQuery);
+        pat.setString(1, vin);
+        pat.executeUpdate();
+        
+        JOptionPane.showMessageDialog(null, "Data deleted successfully!");
         loadData(vehicleType);
     } catch (SQLException ex) {
         Logger.getLogger(VehicleDetails.class.getName()).log(Level.SEVERE, null, ex);
     }
 }
 
-// Method to delete data from both VEHICLE and RESELLER tables
-//private void deleteData() {
-//    try {
-//        int vehicleId = Integer.parseInt(veh_id.getText());
-//        
-//        // Delete data from RESELLER table
-//        String deleteResellerQuery = "DELETE FROM RESELLER WHERE VEHICLE_ID=?";
-//        pat = conn.prepareStatement(deleteResellerQuery);
-//        pat.setInt(1, vehicleId);
-//        pat.executeUpdate();
-//        
-//        // Delete data from VEHICLE table
-//        String deleteVehicleQuery = "DELETE FROM VEHICLE WHERE VEHICLE_ID=?";
-//        pat = conn.prepareStatement(deleteVehicleQuery);
-//        pat.setInt(1, vehicleId);
-//        pat.executeUpdate();
-//        
-//        JOptionPane.showMessageDialog(null, "Data deleted successfully!");
-//        loadData(vehicleType);
-//    } catch (SQLException ex) {
-//        Logger.getLogger(VehicleDetails.class.getName()).log(Level.SEVERE, null, ex);
-//    }
-//}
-
-// Method to clear fields in the form
 private void clearFields() {
     companyfield.setText("");
     mileagefield.setText("");
     colorfield.setText("");
-    vin.setText("");
+    register.setText("");
     modelfield.setText("");
     yearfield.setText("");
     pprice.setText("");
@@ -282,7 +298,7 @@ private void clearFields() {
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
-        vin = new javax.swing.JTextField();
+        register = new javax.swing.JTextField();
         modelfield = new javax.swing.JTextField();
         companyfield = new javax.swing.JTextField();
         mileagefield = new javax.swing.JTextField();
@@ -303,6 +319,7 @@ private void clearFields() {
         jLabel13 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
+        delete = new javax.swing.JButton();
         jLabel17 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         TableDetails = new javax.swing.JTable();
@@ -360,9 +377,9 @@ private void clearFields() {
         jLabel9.setForeground(new java.awt.Color(255, 255, 255));
         jLabel9.setText("Selling Price");
 
-        vin.addActionListener(new java.awt.event.ActionListener() {
+        register.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                vinActionPerformed(evt);
+                registerActionPerformed(evt);
             }
         });
 
@@ -451,6 +468,19 @@ private void clearFields() {
         jLabel15.setForeground(new java.awt.Color(255, 255, 255));
         jLabel15.setText("Seller ID");
 
+        delete.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        delete.setText("Delete");
+        delete.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                deleteMouseClicked(evt);
+            }
+        });
+        delete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteActionPerformed(evt);
+            }
+        });
+
         jLabel17.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
         jLabel17.setForeground(new java.awt.Color(255, 255, 255));
         jLabel17.setText("Vehicle ID");
@@ -484,7 +514,7 @@ private void clearFields() {
                                         .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(jPanel3Layout.createSequentialGroup()
                                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                            .addComponent(vin)
+                                            .addComponent(register)
                                             .addComponent(companyfield, javax.swing.GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE))
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -526,7 +556,8 @@ private void clearFields() {
                                 .addGap(89, 89, 89)
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(updatebutton, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(clearbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                                    .addComponent(clearbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(delete, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))))))
                 .addGap(125, 125, 125))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -541,47 +572,61 @@ private void clearFields() {
                 .addGap(21, 21, 21)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(vin, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(register, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(modelfield, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3)
                     .addComponent(insertbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(22, 22, 22)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(mileagefield, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(companyfield, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel5)
-                    .addComponent(jLabel4))
-                .addGap(21, 21, 21)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(22, 22, 22)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(mileagefield, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(companyfield, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel4)))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(40, 40, 40)
+                        .addComponent(delete, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(yearfield, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel7)
                     .addComponent(jLabel6)
-                    .addComponent(colorfield, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(updatebutton, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(22, 22, 22)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(sprice, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel9)
-                    .addComponent(jLabel8)
-                    .addComponent(pprice, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(21, 21, 21)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(sellerphone, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(sellername, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel10)
-                    .addComponent(jLabel12)
-                    .addComponent(clearbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(19, 19, 19)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(sellerid, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel14)
-                    .addComponent(jLabel15)
-                    .addComponent(warehouseid, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(31, 31, 31)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(veh_id, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel13)
-                    .addComponent(jLabel17))
+                    .addComponent(colorfield, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(25, 25, 25)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(sprice, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel9)
+                            .addComponent(jLabel8)
+                            .addComponent(pprice, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addGap(25, 25, 25)
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(sellerphone, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(sellername, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel10)
+                                    .addComponent(jLabel12))
+                                .addGap(22, 22, 22)
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(sellerid, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel14)
+                                    .addComponent(jLabel15)
+                                    .addComponent(warehouseid, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(31, 31, 31))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(clearbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(50, 50, 50)))
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(veh_id, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel13)
+                            .addComponent(jLabel17)))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(updatebutton, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(18, Short.MAX_VALUE))
         );
 
@@ -589,13 +634,13 @@ private void clearFields() {
 
         TableDetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Vehicle ID", "Model", "Company", "Mileage", "Colour", "Year", "Price", "Contact", "Seller"
+                "Vehicle ID", "Model", "Company", "Mileage", "Colour", "Year", "Price", "Contact", "Seller", "Reg No"
             }
         ));
         TableDetails.getTableHeader().setReorderingAllowed(false);
@@ -789,9 +834,9 @@ private void clearFields() {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void vinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_vinActionPerformed
+    private void registerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_vinActionPerformed
+    }//GEN-LAST:event_registerActionPerformed
 
     private void companyfieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_companyfieldActionPerformed
         // TODO add your handling code here:
@@ -901,6 +946,15 @@ private void clearFields() {
         dispose();
     }//GEN-LAST:event_jLabel21MouseClicked
 
+    private void deleteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deleteMouseClicked
+        // TODO add your handling code here:
+        deleteData();
+    }//GEN-LAST:event_deleteMouseClicked
+
+    private void deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_deleteActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -959,6 +1013,7 @@ private void clearFields() {
     private javax.swing.JLabel client2;
     private javax.swing.JTextField colorfield;
     private javax.swing.JTextField companyfield;
+    private javax.swing.JButton delete;
     private javax.swing.JButton insertbutton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -985,13 +1040,13 @@ private void clearFields() {
     private javax.swing.JTextField mileagefield;
     private javax.swing.JTextField modelfield;
     private javax.swing.JTextField pprice;
+    private javax.swing.JTextField register;
     private javax.swing.JTextField sellerid;
     private javax.swing.JTextField sellername;
     private javax.swing.JTextField sellerphone;
     private javax.swing.JTextField sprice;
     private javax.swing.JButton updatebutton;
     private javax.swing.JTextField veh_id;
-    private javax.swing.JTextField vin;
     private javax.swing.JLabel warehouse2;
     private javax.swing.JTextField warehouseid;
     private javax.swing.JTextField yearfield;

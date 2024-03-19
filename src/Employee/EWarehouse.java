@@ -1,8 +1,6 @@
 
 package Employee;
 import FirstPage.OpenPage;
-import Administrator.Register;
-import Administrator.Warehouse;
 import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,11 +28,11 @@ public class EWarehouse extends javax.swing.JFrame {
     public void Connect(){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn=DriverManager.getConnection("jdbc:mysql://localhost/shams","root","");
+            conn=DriverManager.getConnection("jdbc:mysql://localhost/shamsdemo","root"," ");
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ERegister.class.getName()).log(Level.SEVERE, null, ex);
         }catch(SQLException ex){
-            Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ERegister.class.getName()).log(Level.SEVERE, null, ex);
         }
         
     }
@@ -42,10 +40,10 @@ public class EWarehouse extends javax.swing.JFrame {
     
       private void loadWarehouseDetails() {
     try {
-        String query = "SELECT w.WAREHOUSE_ID, w.WAREHOUSE_NAME, w.LOCATION, w.CAPACITY, COUNT(v.VEHICLE_ID) AS TOTAL " +
+        String query = "SELECT w.WAREHOUSE_ID, w.NAME, w.LOCATION, w.CAPACITY, COUNT(v.REG_NO) AS TOTAL " +
                        "FROM WAREHOUSE w " +
                        "LEFT JOIN VEHICLE v ON w.WAREHOUSE_ID = v.WAREHOUSE_ID AND V.STATUS='AVAILABLE'" +
-                       "GROUP BY w.WAREHOUSE_ID, w.WAREHOUSE_NAME, w.LOCATION, w.CAPACITY";
+                       "GROUP BY w.WAREHOUSE_ID, w.NAME, w.LOCATION, w.CAPACITY";
         pat = conn.prepareStatement(query);
         rs = pat.executeQuery();
 
@@ -54,10 +52,10 @@ public class EWarehouse extends javax.swing.JFrame {
 
         while (rs.next()) {
             // Add data to the table model
-            model.addRow(new Object[]{rs.getInt("WAREHOUSE_ID"), rs.getString("WAREHOUSE_NAME"), rs.getString("LOCATION"), rs.getInt("CAPACITY"), rs.getInt("TOTAL")});
+            model.addRow(new Object[]{rs.getInt("WAREHOUSE_ID"), rs.getString("NAME"), rs.getString("LOCATION"), rs.getInt("CAPACITY"), rs.getInt("TOTAL")});
         }
     } catch (SQLException ex) {
-        Logger.getLogger(Warehouse.class.getName()).log(Level.SEVERE, null, ex);
+        Logger.getLogger(EWarehouse.class.getName()).log(Level.SEVERE, null, ex);
     }
 }
 
@@ -86,10 +84,10 @@ public class EWarehouse extends javax.swing.JFrame {
 
             while (rs.next()) {
                 // Add data to the table model
-                model.addRow(new Object[]{rs.getInt("VEHICLE_ID"), rs.getString("vin"), rs.getString("company"), rs.getInt("YEAR")});
+                model.addRow(new Object[]{rs.getInt("VEHICLE_ID"), rs.getString("reg_no"), rs.getString("company"), rs.getInt("YEAR")});
             }
         } catch (SQLException ex) {
-            Logger.getLogger(Warehouse.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(EWarehouse.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     private void clearFields() {
@@ -475,12 +473,12 @@ public class EWarehouse extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Warehouse.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EWarehouse.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Warehouse().setVisible(true);
+                new EWarehouse().setVisible(true);
             }
         });
     }

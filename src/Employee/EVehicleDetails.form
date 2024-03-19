@@ -115,7 +115,7 @@
                                           </Group>
                                           <Group type="102" alignment="1" attributes="0">
                                               <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                                  <Component id="vin" alignment="1" max="32767" attributes="0"/>
+                                                  <Component id="register" alignment="1" max="32767" attributes="0"/>
                                                   <Component id="companyfield" alignment="1" pref="255" max="32767" attributes="0"/>
                                               </Group>
                                               <EmptySpace min="29" max="32767" attributes="0"/>
@@ -179,7 +179,7 @@
                                   <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="3" attributes="0">
                                       <Component id="jLabel10" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="vin" alignment="3" min="-2" pref="29" max="-2" attributes="0"/>
+                                      <Component id="register" alignment="3" min="-2" pref="29" max="-2" attributes="0"/>
                                       <Component id="modelfield" alignment="3" min="-2" pref="29" max="-2" attributes="0"/>
                                       <Component id="jLabel11" alignment="3" min="-2" max="-2" attributes="0"/>
                                   </Group>
@@ -334,9 +334,9 @@
                     <Property name="text" type="java.lang.String" value="Selling Price"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JTextField" name="vin">
+                <Component class="javax.swing.JTextField" name="register">
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="vinActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="registerActionPerformed"/>
                   </Events>
                 </Component>
                 <Component class="javax.swing.JTextField" name="modelfield">
@@ -476,7 +476,7 @@
                 <Component class="javax.swing.JTable" name="TableDetails">
                   <Properties>
                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                      <Table columnCount="9" rowCount="4">
+                      <Table columnCount="10" rowCount="4">
                         <Column editable="true" title="Vehicle ID" type="java.lang.Object"/>
                         <Column editable="true" title="Model" type="java.lang.Object"/>
                         <Column editable="true" title="Company" type="java.lang.Object"/>
@@ -486,7 +486,62 @@
                         <Column editable="true" title="Price" type="java.lang.Object"/>
                         <Column editable="true" title="Contact" type="java.lang.Object"/>
                         <Column editable="true" title="Seller" type="java.lang.Object"/>
+                        <Column editable="true" title="Reg no" type="java.lang.Object"/>
                       </Table>
+                    </Property>
+                    <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
+                      <TableColumnModel selectionModel="0">
+                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                          <Title/>
+                          <Editor/>
+                          <Renderer/>
+                        </Column>
+                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                          <Title/>
+                          <Editor/>
+                          <Renderer/>
+                        </Column>
+                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                          <Title/>
+                          <Editor/>
+                          <Renderer/>
+                        </Column>
+                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                          <Title/>
+                          <Editor/>
+                          <Renderer/>
+                        </Column>
+                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                          <Title/>
+                          <Editor/>
+                          <Renderer/>
+                        </Column>
+                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                          <Title/>
+                          <Editor/>
+                          <Renderer/>
+                        </Column>
+                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                          <Title/>
+                          <Editor/>
+                          <Renderer/>
+                        </Column>
+                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                          <Title/>
+                          <Editor/>
+                          <Renderer/>
+                        </Column>
+                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                          <Title/>
+                          <Editor/>
+                          <Renderer/>
+                        </Column>
+                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                          <Title/>
+                          <Editor/>
+                          <Renderer/>
+                        </Column>
+                      </TableColumnModel>
                     </Property>
                     <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
                       <TableHeader reorderingAllowed="false" resizingAllowed="true"/>

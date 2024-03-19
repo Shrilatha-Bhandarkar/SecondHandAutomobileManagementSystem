@@ -23,36 +23,8 @@ public class EServiceDetails extends javax.swing.JFrame {
         initComponents();
         this.serviceType= serviceType;
         Connect();
-        displayServiceData(serviceType);
+        loadData(serviceType);
         
-        servicestable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-        public void valueChanged(ListSelectionEvent e) {
-        if (!e.getValueIsAdjusting()) {
-            int selectedRow = servicestable.getSelectedRow();
-            if (selectedRow != -1) { // If a row is selected
-                // Get the data from the selected row
-                Object serviceId = servicestable.getValueAt(selectedRow, 0);
-                Object vehicleId = servicestable.getValueAt(selectedRow, 1);
-                Object providerId = servicestable.getValueAt(selectedRow, 2);
-                Object typeValue = servicestable.getValueAt(selectedRow, 5);
-                Object dateIn = servicestable.getValueAt(selectedRow, 4); 
-                Object dueDate = servicestable.getValueAt(selectedRow, 3); 
-                Object costValue = servicestable.getValueAt(selectedRow, 6);
-                Object statusValue = servicestable.getValueAt(selectedRow, 7);
-                
-                // Set the data to corresponding text fields or other components
-                service_id.setText(serviceId.toString());
-                provider_id.setText(providerId.toString());
-                vehicle_id.setText(vehicleId.toString());
-                type.setText(typeValue.toString());
-                cost.setText(costValue.toString());
-                datein.setText(dateIn.toString());
-                duedate.setText(dueDate.toString());
-                status.setText(statusValue.toString());
-            }
-        }
-    }
-});
 
     }
      Connection conn;
@@ -62,7 +34,7 @@ public class EServiceDetails extends javax.swing.JFrame {
     public void Connect(){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn=DriverManager.getConnection("jdbc:mysql://localhost/shams","root","");
+            conn=DriverManager.getConnection("jdbc:mysql://localhost/shamsdemo","root"," ");
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
         }catch(SQLException ex){
@@ -70,7 +42,7 @@ public class EServiceDetails extends javax.swing.JFrame {
         }
         
     }
-   private void displayServiceData(String serviceType) {
+  private void loadData(String serviceType) {
     try {
         String query = "";
 
@@ -95,22 +67,57 @@ public class EServiceDetails extends javax.swing.JFrame {
 
             while (rs.next()) {
                 Object[] row = new Object[8]; // Assuming there are 8 columns in the services table
-                for (int i = 0; i < row.length; i++) {
-                    row[i] = rs.getObject(i + 1);
-                }
+                row[0] = rs.getInt("SERVICE_ID");
+                row[1] = rs.getString("REG_NO");
+                row[2] = rs.getInt("SERVICE_PROVIDER_ID");
+                row[3] = rs.getDate("DUE_DATE");
+                row[4] = rs.getDate("DATE");
+                row[5] = rs.getString("SERVICE_TYPE");
+                row[6] = rs.getBigDecimal("COST");
+                row[7] = rs.getString("STATUS");
                 model.addRow(row);
             }
+            
+            // Add ListSelectionListener to the table
+            servicestable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+                public void valueChanged(ListSelectionEvent e) {
+                    if (!e.getValueIsAdjusting()) {
+                        int selectedRow = servicestable.getSelectedRow();
+                        if (selectedRow != -1) { // If a row is selected
+                            // Get the data from the selected row
+                            Object serviceId = servicestable.getValueAt(selectedRow, 0);
+                            Object regNo = servicestable.getValueAt(selectedRow, 1);
+                            Object providerId = servicestable.getValueAt(selectedRow, 2);
+                            Object dueDate = servicestable.getValueAt(selectedRow, 3); 
+                            Object dateIn = servicestable.getValueAt(selectedRow, 4); 
+                            Object serviceType = servicestable.getValueAt(selectedRow, 5);
+                            Object costValue = servicestable.getValueAt(selectedRow, 6);
+                            Object statusValue = servicestable.getValueAt(selectedRow, 7);
+                            
+                            // Set the data to corresponding text fields or other components
+                            service_id.setText(serviceId.toString());
+                            regno.setText(regNo.toString());
+                            provider_id.setText(providerId.toString());
+                            duedate.setText(dueDate.toString());
+                            datein.setText(dateIn.toString());
+                            type.setText(serviceType.toString());
+                            cost.setText(costValue.toString());
+                            status.setText(statusValue.toString());
+                        }
+                    }
+                }
+            });
         }
     } catch (SQLException ex) {
-        // Log an error message for SQL exceptions
         Logger.getLogger(ServiceDetails.class.getName()).log(Level.SEVERE, "Error retrieving service data", ex);
     }
 }
+
    
    private void clearFields() {
         provider_id.setText("");
         service_id.setText("");
-        vehicle_id.setText("");
+        regno.setText("");
         type.setText("");
         cost.setText("");
         datein.setText("");
@@ -131,7 +138,7 @@ public class EServiceDetails extends javax.swing.JFrame {
         servicestable = new javax.swing.JTable();
         service_id = new javax.swing.JTextField();
         provider_id = new javax.swing.JTextField();
-        vehicle_id = new javax.swing.JTextField();
+        regno = new javax.swing.JTextField();
         type = new javax.swing.JTextField();
         status = new javax.swing.JTextField();
         datein = new javax.swing.JTextField();
@@ -175,7 +182,7 @@ public class EServiceDetails extends javax.swing.JFrame {
                 {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Service_ID", "Vehicle_ID", "ServiceProviderID", "DueDate", "Date In", "Service_Type", "Cost", "Status"
+                "Service_ID", "Reg No", "ServiceProviderID", "DueDate", "Date In", "Service_Type", "Cost", "Status"
             }
         ));
         jScrollPane1.setViewportView(servicestable);
@@ -183,7 +190,7 @@ public class EServiceDetails extends javax.swing.JFrame {
         jPanel6.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(19, 22, 884, 315));
         jPanel6.add(service_id, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 350, 138, 32));
         jPanel6.add(provider_id, new org.netbeans.lib.awtextra.AbsoluteConstraints(219, 413, 138, 32));
-        jPanel6.add(vehicle_id, new org.netbeans.lib.awtextra.AbsoluteConstraints(696, 355, 138, 32));
+        jPanel6.add(regno, new org.netbeans.lib.awtextra.AbsoluteConstraints(696, 355, 138, 32));
         jPanel6.add(type, new org.netbeans.lib.awtextra.AbsoluteConstraints(696, 413, 138, 32));
         jPanel6.add(status, new org.netbeans.lib.awtextra.AbsoluteConstraints(696, 531, 138, 32));
         jPanel6.add(datein, new org.netbeans.lib.awtextra.AbsoluteConstraints(696, 471, 138, 32));
@@ -195,7 +202,7 @@ public class EServiceDetails extends javax.swing.JFrame {
         jPanel6.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(46, 360, 115, -1));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel3.setText("Vehcile ID");
+        jLabel3.setText("Reg No");
         jPanel6.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(543, 360, 115, -1));
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -399,9 +406,7 @@ public class EServiceDetails extends javax.swing.JFrame {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(Dashboard1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(0, 0, 0)
-                .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -421,36 +426,29 @@ public class EServiceDetails extends javax.swing.JFrame {
     private void insertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertActionPerformed
         // TODO add your handling code here:
         try {
-            // Prepare the insertion query
-            String query = "INSERT INTO service (SERVICE_PROVIDER_ID, VEHICLE_ID, DUE_DATE, DATE, SERVICE_TYPE, COST, STATUS) VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-            // Create a PreparedStatement for the query
-            pat = conn.prepareStatement(query);
-
-            // Set the values for the parameters in the query
-            pat.setString(1, provider_id.getText());
-            pat.setInt(2, Integer.parseInt(vehicle_id.getText()));
-            pat.setString(3, duedate.getText());
-            pat.setString(4, datein.getText());
-            pat.setString(5, type.getText());
-            pat.setString(6, cost.getText());
-            pat.setString(7, status.getText()); // Assuming status is taken from the input field
-
-            // Execute the insertion query
-            int insertedRows = pat.executeUpdate();
-
-            // Check if insertion was successful
-            if (insertedRows > 0) {
-                // Refresh table data
-                displayServiceData(serviceType);
-                // Clear input fields
-                clearFields();
-            } else {
-                System.out.println("Failed to insert data.");
-            }
-        } catch (SQLException | NumberFormatException ex) {
-            Logger.getLogger(ServiceDetails.class.getName()).log(Level.SEVERE, null, ex);
+        String query = "INSERT INTO service (SERVICE_PROVIDER_ID, REG_NO, DUE_DATE, DATE, SERVICE_TYPE, COST, STATUS) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        
+        pat = conn.prepareStatement(query);
+        
+        pat.setString(1, provider_id.getText());
+        pat.setString(2, regno.getText());
+        pat.setString(3, duedate.getText());
+        pat.setString(4, datein.getText());
+        pat.setString(5, type.getText());
+        pat.setString(6, cost.getText());
+        pat.setString(7, status.getText());
+        
+        int insertedRows = pat.executeUpdate();
+        
+        if (insertedRows > 0) {
+            loadData(serviceType);
+            clearFields();
+        } else {
+            System.out.println("Failed to insert data.");
         }
+    } catch (SQLException | NumberFormatException ex) {
+        Logger.getLogger(ServiceDetails.class.getName()).log(Level.SEVERE, null, ex);
+    }
     }//GEN-LAST:event_insertActionPerformed
 
     private void UpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UpdateActionPerformed
@@ -458,11 +456,11 @@ public class EServiceDetails extends javax.swing.JFrame {
         int selectedRow = servicestable.getSelectedRow();
         if (selectedRow != -1) {
             try {
-                String query = "UPDATE service SET SERVICE_PROVIDER_ID = ?, VEHICLE_ID = ?,  DUE_DATE = ?,DATE = ?,  SERVICE_TYPE = ?, COST = ?,STATUS = ? WHERE SERVICE_ID = ?";
+                String query = "UPDATE service SET SERVICE_PROVIDER_ID = ?, REG_NO = ?,  DUE_DATE = ?,DATE = ?,  SERVICE_TYPE = ?, COST = ?,STATUS = ? WHERE SERVICE_ID = ?";
                 pat = conn.prepareStatement(query);
 
                 pat.setString(1, provider_id.getText());
-                pat.setInt(2, Integer.parseInt(vehicle_id.getText()));
+                pat.setString(2, regno.getText());
                 pat.setString(3, duedate.getText());
                 pat.setString(4, datein.getText());
                 pat.setString(5, type.getText());
@@ -472,19 +470,16 @@ public class EServiceDetails extends javax.swing.JFrame {
 
                 int updatedRows = pat.executeUpdate();
                 if (updatedRows > 0) {
-                    // Refresh table data
-                    displayServiceData(serviceType);
-                    // Clear input fields
+                    loadData(serviceType);
                     clearFields();
                 } else {
                     System.out.println("Failed to update data.");
                 }
-
+                
             } catch (SQLException | NumberFormatException ex) {
                 Logger.getLogger(ServiceDetails.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-
     }//GEN-LAST:event_UpdateActionPerformed
 
     private void ClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ClearActionPerformed
@@ -613,10 +608,10 @@ public class EServiceDetails extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField provider_id;
+    private javax.swing.JTextField regno;
     private javax.swing.JTextField service_id;
     private javax.swing.JTable servicestable;
     private javax.swing.JTextField status;
     private javax.swing.JTextField type;
-    private javax.swing.JTextField vehicle_id;
     // End of variables declaration//GEN-END:variables
 }

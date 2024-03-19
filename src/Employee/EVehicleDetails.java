@@ -47,7 +47,7 @@ public class EVehicleDetails extends javax.swing.JFrame {
     public void Connect(){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn=DriverManager.getConnection("jdbc:mysql://localhost/shams","root","");
+            conn=DriverManager.getConnection("jdbc:mysql://localhost/shamsdemo","root"," ");
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
         }catch(SQLException ex){
@@ -56,11 +56,11 @@ public class EVehicleDetails extends javax.swing.JFrame {
         
     }
 
-    private void loadData(String vehicleType) {
+     private void loadData(String vehicleType) {
     try {
-        String sql = "SELECT V.VEHICLE_ID, V.MODEL, V.COMPANY, V.MILEAGE, V.COLOUR, V.YEAR, V.SELLING_PRICE,R.NAME AS SELLER_NAME, R.PHONE AS SELLER_PHONE " +
+        String sql = "SELECT V.VEHICLE_ID, V.MODEL, V.COMPANY, V.MILEAGE, V.COLOUR, V.YEAR, V.SELLING_PRICE,R.NAME AS SELLER_NAME, R.PHONE AS SELLER_PHONE,V.REG_NO " +
                      "FROM VEHICLE V " +
-                     "JOIN RESELLER R ON V.VEHICLE_ID = R.VEHICLE_ID " +
+                     "JOIN RESELLER R ON V.REG_NO = R.REG_NO " +
                      "WHERE V.TYPE = ? AND STATUS='AVAILABLE'";
         pat = conn.prepareStatement(sql);
         pat.setString(1, vehicleType);
@@ -70,7 +70,7 @@ public class EVehicleDetails extends javax.swing.JFrame {
         model.setRowCount(0); // Clear the existing table data
         
         while(rs.next()){
-            Object[] row = new Object[10]; // 10 columns are selected from the database
+            Object[] row = new Object[11]; // 10 columns are selected from the database
             row[0] = rs.getInt("VEHICLE_ID");
             row[1] = rs.getString("MODEL");
             row[2] = rs.getString("COMPANY");
@@ -79,12 +79,13 @@ public class EVehicleDetails extends javax.swing.JFrame {
             row[5] = rs.getInt("YEAR");
             row[6] = rs.getBigDecimal("SELLING_PRICE");
             row[7] = rs.getString("SELLER_PHONE");
-            row[8] = rs.getString("SELLER_NAME"); // Seller Name
+            row[8] = rs.getString("SELLER_NAME"); 
+            row[9] = rs.getString("REG_NO"); 
              // Seller Phone
             model.addRow(row);
         }
     } catch (SQLException ex) {
-        Logger.getLogger(Administrator.VehicleDetails.class.getName()).log(Level.SEVERE, null, ex);
+        Logger.getLogger(VehicleDetails.class.getName()).log(Level.SEVERE, null, ex);
     }
 }
 
@@ -100,8 +101,9 @@ public class EVehicleDetails extends javax.swing.JFrame {
             String color = TableDetails.getValueAt(row, 4).toString();
             int year = Integer.parseInt(TableDetails.getValueAt(row, 5).toString());
             BigDecimal price = (BigDecimal) TableDetails.getValueAt(row, 6);
+            String regNo = TableDetails.getValueAt(row, 9).toString(); 
             
-            // Set the data to the text fields
+            
             modelfield.setText(model);
             companyfield.setText(company);
             mileagefield.setText(String.valueOf(mileage));
@@ -110,25 +112,26 @@ public class EVehicleDetails extends javax.swing.JFrame {
             sprice.setText(price.toString());
             veh_id.setText(String.valueOf(vehicleId));
             
-            // Retrieve additional data from the database
-            String vehicleQuery = "SELECT VIN, PURCHASE_PRICE, WAREHOUSE_ID FROM VEHICLE WHERE VEHICLE_ID = ?";
+            
+            register.setText(regNo);
+            
+            
+            String vehicleQuery = "SELECT PURCHASE_PRICE, WAREHOUSE_ID FROM VEHICLE WHERE REG_NO = ?";
             pat = conn.prepareStatement(vehicleQuery);
-            pat.setInt(1, vehicleId);
+            pat.setString(1, regNo);
             ResultSet vehicleResult = pat.executeQuery();
             
             if (vehicleResult.next()) {
-                String vinValue = vehicleResult.getString("VIN");
                 BigDecimal purchasePrice = vehicleResult.getBigDecimal("PURCHASE_PRICE");
                 int warehouseIdValue = vehicleResult.getInt("WAREHOUSE_ID");
                 
-                vin.setText(vinValue);
                 pprice.setText(purchasePrice.toString());
                 warehouseid.setText(String.valueOf(warehouseIdValue));
             }
             
-            String sellerQuery = "SELECT RESELLER_ID, NAME, PHONE FROM RESELLER WHERE VEHICLE_ID = ?";
+            String sellerQuery = "SELECT RESELLER_ID, NAME, PHONE FROM RESELLER WHERE REG_NO = ?";
             pat = conn.prepareStatement(sellerQuery);
-            pat.setInt(1, vehicleId);
+            pat.setString(1, regNo);
             ResultSet sellerResult = pat.executeQuery();
             
             if (sellerResult.next()) {
@@ -141,47 +144,46 @@ public class EVehicleDetails extends javax.swing.JFrame {
                 sellerphone.setText(sellerPhone);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(Administrator.VehicleDetails.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(VehicleDetails.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
 
-// Inside the constructor or initialization method where you set up the MouseListener
 
-  
 private void updateData() {
     try {
         // Update data in VEHICLE table
-        String updateVehicleQuery = "UPDATE VEHICLE SET VIN=?, COMPANY=?, MODEL=?, MILEAGE=?, COLOUR=?, YEAR=?, PURCHASE_PRICE=? WHERE VEHICLE_ID=?";
+        String updateVehicleQuery = "UPDATE VEHICLE SET COMPANY=?, MODEL=?, MILEAGE=?, COLOUR=?, YEAR=?, PURCHASE_PRICE=? WHERE REG_NO=?";
         pat = conn.prepareStatement(updateVehicleQuery);
-        pat.setString(1, vin.getText());
-        pat.setString(2, companyfield.getText());
-        pat.setString(3, modelfield.getText());
-        pat.setInt(4, Integer.parseInt(mileagefield.getText()));
-        pat.setString(5, colorfield.getText());
-        pat.setInt(6, Integer.parseInt(yearfield.getText()));
-        pat.setBigDecimal(7, new BigDecimal(pprice.getText()));
-        pat.setInt(8, Integer.parseInt(veh_id.getText()));
-        
+        pat.setString(1, companyfield.getText());
+        pat.setString(2, modelfield.getText());
+        pat.setInt(3, Integer.parseInt(mileagefield.getText()));
+        pat.setString(4, colorfield.getText());
+        pat.setInt(5, Integer.parseInt(yearfield.getText()));
+        pat.setBigDecimal(6, new BigDecimal(pprice.getText()));
+        pat.setString(7, register.getText());
+
         pat.executeUpdate();
-        
+
         // Update data in RESELLER table
-        String updateResellerQuery = "UPDATE RESELLER SET NAME=?, PHONE=? WHERE VEHICLE_ID=?";
+        String updateResellerQuery = "UPDATE RESELLER SET NAME=?, PHONE=? WHERE REG_NO=?";
         pat = conn.prepareStatement(updateResellerQuery);
         pat.setString(1, sellername.getText());
         pat.setString(2, sellerphone.getText());
-        pat.setInt(3, Integer.parseInt(veh_id.getText()));
-        
+        pat.setString(3, register.getText());
+
         pat.executeUpdate();
-        
+
         JOptionPane.showMessageDialog(null, "Data updated successfully!");
-        
+
         // Reload data into the table after updating
         loadData(vehicleType);
     } catch (SQLException ex) {
-        Logger.getLogger(Administrator.VehicleDetails.class.getName()).log(Level.SEVERE, null, ex);
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(null, "Error: Failed to update data. See console for details.");
     }
 }
+
 
 // Method to delete data from both VEHICLE and RESELLER tables
 
@@ -191,7 +193,7 @@ private void clearFields() {
     companyfield.setText("");
     mileagefield.setText("");
     colorfield.setText("");
-    vin.setText("");
+    register.setText("");
     modelfield.setText("");
     yearfield.setText("");
     pprice.setText("");
@@ -219,7 +221,7 @@ private void clearFields() {
         jLabel15 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
-        vin = new javax.swing.JTextField();
+        register = new javax.swing.JTextField();
         modelfield = new javax.swing.JTextField();
         companyfield = new javax.swing.JTextField();
         mileagefield = new javax.swing.JTextField();
@@ -295,9 +297,9 @@ private void clearFields() {
         jLabel17.setForeground(new java.awt.Color(255, 255, 255));
         jLabel17.setText("Selling Price");
 
-        vin.addActionListener(new java.awt.event.ActionListener() {
+        register.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                vinActionPerformed(evt);
+                registerActionPerformed(evt);
             }
         });
 
@@ -405,7 +407,7 @@ private void clearFields() {
                                     .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGroup(jPanel4Layout.createSequentialGroup()
                                     .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(vin)
+                                        .addComponent(register)
                                         .addComponent(companyfield, javax.swing.GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE))
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -451,7 +453,7 @@ private void clearFields() {
                         .addGap(25, 25, 25)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel10)
-                            .addComponent(vin, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(register, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(modelfield, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel11))
                         .addGap(25, 25, 25)
@@ -506,13 +508,13 @@ private void clearFields() {
 
         TableDetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Vehicle ID", "Model", "Company", "Mileage", "Colour", "Year", "Price", "Contact", "Seller"
+                "Vehicle ID", "Model", "Company", "Mileage", "Colour", "Year", "Price", "Contact", "Seller", "Reg no"
             }
         ));
         TableDetails.getTableHeader().setReorderingAllowed(false);
@@ -688,9 +690,9 @@ private void clearFields() {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void vinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_vinActionPerformed
+    private void registerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_vinActionPerformed
+    }//GEN-LAST:event_registerActionPerformed
 
     private void companyfieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_companyfieldActionPerformed
         // TODO add your handling code here:
@@ -867,13 +869,13 @@ private void clearFields() {
     private javax.swing.JTextField mileagefield;
     private javax.swing.JTextField modelfield;
     private javax.swing.JTextField pprice;
+    private javax.swing.JTextField register;
     private javax.swing.JTextField sellerid;
     private javax.swing.JTextField sellername;
     private javax.swing.JTextField sellerphone;
     private javax.swing.JTextField sprice;
     private javax.swing.JButton updatebutton;
     private javax.swing.JTextField veh_id;
-    private javax.swing.JTextField vin;
     private javax.swing.JTextField warehouseid;
     private javax.swing.JTextField yearfield;
     // End of variables declaration//GEN-END:variables

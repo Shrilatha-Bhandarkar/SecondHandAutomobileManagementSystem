@@ -4,7 +4,6 @@
  */
 package Employee;
 import FirstPage.OpenPage;
-import Administrator.Register;
 import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,17 +21,17 @@ public class ETransactions extends javax.swing.JFrame {
     public void Connect(){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn=DriverManager.getConnection("jdbc:mysql://localhost/shams","root","");
+            conn=DriverManager.getConnection("jdbc:mysql://localhost/shamsdemo","root"," ");
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ERegister.class.getName()).log(Level.SEVERE, null, ex);
         }catch(SQLException ex){
-            Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ERegister.class.getName()).log(Level.SEVERE, null, ex);
         }
         
     }
 
    
- private boolean validateInputs(String vehicleNo, String type, String employeeId, String buyerName, String buyerAddress, String buyerPhone, String buyerEmail, String sellerName) {
+  private boolean validateInputs(String vehicleNo, String type, String employeeId, String buyerName, String buyerPhone,  String sellerName) {
         boolean isValid = true;
         if (vehicleNo.isEmpty() || type.isEmpty() || employeeId.isEmpty() || buyerName.isEmpty() || buyerPhone.isEmpty() || sellerName.isEmpty()) {
             isValid = false;
@@ -42,59 +41,91 @@ public class ETransactions extends javax.swing.JFrame {
 
 
 
-private void insertBuyerDetails(int vehicleId,int buyerId, String buyerName, String buyerPhone) throws SQLException {
-    String insertQuery = "INSERT INTO BUYER (BUYER_ID,VEHICLE_ID, NAME, PHONE) VALUES (?,?, ?, ?)";
-    try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {
-        insertStmt.setInt(1, buyerId);
-        insertStmt.setInt(2, vehicleId);
-        insertStmt.setString(3, buyerName);
-        insertStmt.setString(4, buyerPhone);
-        insertStmt.executeUpdate();
-    }
-}
-
-private void insertTransactionDetails(String employeeId, int buyerId, String sellerName, int vehicleId, String transactionDate) throws SQLException {
-    // Assuming that transaction price will be calculated by the trigger, so it's not included in the query
-    String insertQuery = "INSERT INTO TRANSACTION (EMPLOYEE_ID, BUYER_ID, SELLER_ID, VEHICLE_ID, TRANSACTION_DATE) VALUES (?, ?, (SELECT RESELLER_ID FROM RESELLER WHERE NAME = ?), ?, ?)";
+private int insertBuyerDetails(String regno, String buyerName, String buyerPhone) throws SQLException {
+    String insertQuery = "INSERT INTO BUYER (REG_NO, NAME, PHONE) VALUES (?, ?, ?)";
     try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)) {
-        insertStmt.setString(1, employeeId);
-        insertStmt.setInt(2, buyerId);
-        insertStmt.setString(3, sellerName);
-        insertStmt.setInt(4, vehicleId);
-        insertStmt.setString(5, transactionDate);
+        insertStmt.setString(1, regno);
+        insertStmt.setString(2, buyerName);
+        insertStmt.setString(3, buyerPhone);
         
         // Execute the insertion query
         insertStmt.executeUpdate();
         
-        // Retrieve the auto-generated TRANSACTION_ID
+        // Retrieve the auto-generated BUYER_ID
         try (ResultSet generatedKeys = insertStmt.getGeneratedKeys()) {
             if (generatedKeys.next()) {
-                int transactionId = generatedKeys.getInt(1);
-                System.out.println("Inserted transaction with ID: " + transactionId);
-                
-                // Update the VEHICLE table with TRANSACTION_ID and ensure TRANSACTION_PRICE is calculated
-                updateVehicleAfterTransaction(vehicleId, transactionId);
+                return generatedKeys.getInt(1);
             } else {
-                throw new SQLException("Failed to retrieve auto-generated TRANSACTION_ID");
+                throw new SQLException("Failed to retrieve auto-generated BUYER_ID");
             }
         }
     }
 }
 
-private void updateVehicleAfterTransaction(int vehicleId, int transactionId) throws SQLException {
-    String updateQuery = "UPDATE VEHICLE SET TRANSACTION_ID = ?, STATUS = 'SOLD' WHERE VEHICLE_ID = ?";
-    try (PreparedStatement updateStmt = conn.prepareStatement(updateQuery)) {
-        updateStmt.setInt(1, transactionId);
-        updateStmt.setInt(2, vehicleId);
-        updateStmt.executeUpdate();
+
+
+private void insertTransactionDetails(String employeeId, String buyerName, String sellerName, String regno, String transactionDate, double transactionPrice) throws SQLException {
+    // Assuming that transaction price is included in the query
+    String insertQuery = "INSERT INTO TRANSACTION (EMPLOYEE_ID, BUYER_ID, SELLER_ID, REG_NO, TRANSACTION_DATE, TRANSACTION_PRICE) VALUES (?, (SELECT BUYER_ID FROM BUYER WHERE NAME = ?), (SELECT RESELLER_ID FROM RESELLER WHERE NAME = ?), ?, ?, ?)";
+    try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)) {
+        insertStmt.setString(1, employeeId);
+        insertStmt.setString(2, buyerName); 
+        insertStmt.setString(3, sellerName);
+        insertStmt.setString(4, regno);
+        insertStmt.setString(5, transactionDate);
+        insertStmt.setDouble(6, transactionPrice); 
+        
+        insertStmt.executeUpdate();
+        
+        try (ResultSet generatedKeys = insertStmt.getGeneratedKeys()) {
+            if (generatedKeys.next()) {
+                int transactionId = generatedKeys.getInt(1);
+                System.out.println("Inserted transaction with ID: " + transactionId);
+                
+                updateVehicleAfterTransaction(regno, transactionId);
+            } else {
+                throw new SQLException("Failed to retrieve auto-generated TRANSACTION_ID");
+            }
+        }
+    } catch (SQLException ex) {
+        // Print the SQL error message for debugging
+        ex.printStackTrace();
+        throw ex; // Rethrow the exception to handle it in the calling code
     }
 }
 
-private void increaseTransactionCount(String employeeId) throws SQLException {
-    String updateQuery = "UPDATE EMPLOYEE SET TRANSACTION_COUNT = TRANSACTION_COUNT + 1 WHERE EMPLOYEE_ID = ?";
+
+private void updateVehicleAfterTransaction(String regno, int transactionId) throws SQLException {
+    String updateQuery = "UPDATE VEHICLE SET TRANSACTION_ID = ?, STATUS = 'SOLD' WHERE REG_NO = ?";
     try (PreparedStatement updateStmt = conn.prepareStatement(updateQuery)) {
-        updateStmt.setString(1, employeeId);
+        updateStmt.setInt(1, transactionId);
+        updateStmt.setString(2, regno);
         updateStmt.executeUpdate();
+    }
+}
+private double getSellingPrice(String regno) throws SQLException {
+    String getPriceQuery = "SELECT SELLING_PRICE FROM VEHICLE WHERE REG_NO = ?";
+    try (PreparedStatement getPriceStmt = conn.prepareStatement(getPriceQuery)) {
+        getPriceStmt.setString(1, regno);
+        ResultSet rs = getPriceStmt.executeQuery();
+        if (rs.next()) {
+            return rs.getDouble("SELLING_PRICE");
+        } else {
+            throw new SQLException("Vehicle not found or no selling price available.");
+        }
+    }
+}
+
+private double getPurchasePrice(String regno) throws SQLException {
+    String getPriceQuery = "SELECT PURCHASE_PRICE FROM VEHICLE WHERE REG_NO = ?";
+    try (PreparedStatement getPriceStmt = conn.prepareStatement(getPriceQuery)) {
+        getPriceStmt.setString(1,regno);
+        ResultSet rs = getPriceStmt.executeQuery();
+        if (rs.next()) {
+            return rs.getDouble("PURCHASE_PRICE");
+        } else {
+            throw new SQLException("Vehicle not found or no purchase price available.");
+        }
     }
 }
 
@@ -109,7 +140,6 @@ private void increaseTransactionCount(String employeeId) throws SQLException {
         jLabel9 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         typeselect = new javax.swing.JComboBox<>();
-        jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
@@ -117,7 +147,6 @@ private void increaseTransactionCount(String employeeId) throws SQLException {
         jLabel10 = new javax.swing.JLabel();
         Vehicleno = new javax.swing.JTextField();
         buyeraname = new javax.swing.JTextField();
-        buyerid = new javax.swing.JTextField();
         buyerphone = new javax.swing.JTextField();
         date = new javax.swing.JTextField();
         price = new javax.swing.JTextField();
@@ -125,8 +154,9 @@ private void increaseTransactionCount(String employeeId) throws SQLException {
         jLabel12 = new javax.swing.JLabel();
         employeeid = new javax.swing.JTextField();
         sellername = new javax.swing.JTextField();
+        getsel = new javax.swing.JButton();
         BuyButton = new javax.swing.JButton();
-        get = new javax.swing.JButton();
+        getprice = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         Dashboard1 = new javax.swing.JPanel();
         jLabel15 = new javax.swing.JLabel();
@@ -152,7 +182,7 @@ private void increaseTransactionCount(String employeeId) throws SQLException {
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel2.setText("Type of vehicle");
-        jPanel6.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(183, 127, 126, -1));
+        jPanel6.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 140, 126, -1));
 
         typeselect.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Bike", "Car", "Scooter", "Truck" }));
         typeselect.addActionListener(new java.awt.event.ActionListener() {
@@ -160,23 +190,19 @@ private void increaseTransactionCount(String employeeId) throws SQLException {
                 typeselectActionPerformed(evt);
             }
         });
-        jPanel6.add(typeselect, new org.netbeans.lib.awtextra.AbsoluteConstraints(392, 123, 88, 30));
-
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel3.setText("Buyer ID");
-        jPanel6.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(183, 236, 97, -1));
+        jPanel6.add(typeselect, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 140, 88, 30));
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel4.setText("Buyer name");
-        jPanel6.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(183, 288, -1, -1));
+        jPanel6.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 250, -1, -1));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel5.setText("Buyer Phone No.");
-        jPanel6.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(183, 339, -1, -1));
+        jPanel6.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 310, -1, -1));
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel6.setText("Date");
-        jPanel6.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(183, 390, -1, -1));
+        jPanel6.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 380, -1, -1));
 
         Price.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         Price.setText("Price");
@@ -184,42 +210,35 @@ private void increaseTransactionCount(String employeeId) throws SQLException {
 
         jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel10.setText("Vehicle No");
-        jPanel6.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(183, 185, 97, -1));
+        jPanel6.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 190, 97, -1));
 
         Vehicleno.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 VehiclenoActionPerformed(evt);
             }
         });
-        jPanel6.add(Vehicleno, new org.netbeans.lib.awtextra.AbsoluteConstraints(392, 180, 203, 33));
+        jPanel6.add(Vehicleno, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 190, 203, 33));
 
         buyeraname.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buyeranameActionPerformed(evt);
             }
         });
-        jPanel6.add(buyeraname, new org.netbeans.lib.awtextra.AbsoluteConstraints(392, 283, 203, 33));
-
-        buyerid.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buyeridActionPerformed(evt);
-            }
-        });
-        jPanel6.add(buyerid, new org.netbeans.lib.awtextra.AbsoluteConstraints(392, 231, 203, 33));
+        jPanel6.add(buyeraname, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 250, 203, 33));
 
         buyerphone.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buyerphoneActionPerformed(evt);
             }
         });
-        jPanel6.add(buyerphone, new org.netbeans.lib.awtextra.AbsoluteConstraints(392, 334, 203, 33));
+        jPanel6.add(buyerphone, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 310, 203, 33));
 
         date.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 dateActionPerformed(evt);
             }
         });
-        jPanel6.add(date, new org.netbeans.lib.awtextra.AbsoluteConstraints(392, 385, 203, 33));
+        jPanel6.add(date, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 370, 203, 33));
 
         price.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -250,6 +269,22 @@ private void increaseTransactionCount(String employeeId) throws SQLException {
         });
         jPanel6.add(sellername, new org.netbeans.lib.awtextra.AbsoluteConstraints(392, 539, 203, 33));
 
+        getsel.setBackground(new java.awt.Color(0, 0, 0));
+        getsel.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        getsel.setForeground(new java.awt.Color(255, 255, 255));
+        getsel.setText("Get");
+        getsel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                getselMouseClicked(evt);
+            }
+        });
+        getsel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                getselActionPerformed(evt);
+            }
+        });
+        jPanel6.add(getsel, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 540, -1, 33));
+
         BuyButton.setBackground(new java.awt.Color(0, 0, 0));
         BuyButton.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         BuyButton.setForeground(new java.awt.Color(255, 255, 255));
@@ -261,21 +296,21 @@ private void increaseTransactionCount(String employeeId) throws SQLException {
         });
         jPanel6.add(BuyButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(331, 601, 86, 36));
 
-        get.setBackground(new java.awt.Color(0, 0, 0));
-        get.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        get.setForeground(new java.awt.Color(255, 255, 255));
-        get.setText("Get");
-        get.addMouseListener(new java.awt.event.MouseAdapter() {
+        getprice.setBackground(new java.awt.Color(0, 0, 0));
+        getprice.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        getprice.setForeground(new java.awt.Color(255, 255, 255));
+        getprice.setText("Get");
+        getprice.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                getMouseClicked(evt);
+                getpriceMouseClicked(evt);
             }
         });
-        get.addActionListener(new java.awt.event.ActionListener() {
+        getprice.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                getActionPerformed(evt);
+                getpriceActionPerformed(evt);
             }
         });
-        jPanel6.add(get, new org.netbeans.lib.awtextra.AbsoluteConstraints(643, 436, -1, 33));
+        jPanel6.add(getprice, new org.netbeans.lib.awtextra.AbsoluteConstraints(643, 436, -1, 33));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/BGN2.jpg"))); // NOI18N
         jPanel6.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 920, 710));
@@ -458,10 +493,6 @@ private void increaseTransactionCount(String employeeId) throws SQLException {
         // TODO add your handling code here:
     }//GEN-LAST:event_buyeranameActionPerformed
 
-    private void buyeridActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buyeridActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_buyeridActionPerformed
-
     private void buyerphoneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buyerphoneActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_buyerphoneActionPerformed
@@ -485,61 +516,61 @@ private void increaseTransactionCount(String employeeId) throws SQLException {
     private void BuyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BuyButtonActionPerformed
         // TODO add your handling code here:
         try {
-            int vehicleNo = Integer.parseInt(Vehicleno.getText());
-            int buyerId=Integer.parseInt(buyerid.getText());
-            String vehicleType = typeselect.getSelectedItem().toString();
-            String employeeId = employeeid.getText();
-            String buyerName = buyeraname.getText();
-            String buyerPhone = buyerphone.getText();
-            String sellerName = sellername.getText();
-            String transactionDate = date.getText();
+        String regno = Vehicleno.getText(); 
+        String vehicleType = typeselect.getSelectedItem().toString();
+        String employeeId = employeeid.getText();
+        String buyerName = buyeraname.getText();
+        String buyerPhone = buyerphone.getText();
+        String sellerName = sellername.getText();
+        String transactionDate = date.getText();
 
-            if (validateInputs(String.valueOf(vehicleNo), vehicleType, employeeId, buyerName, "", buyerPhone, "", sellerName)) {
+        if (validateInputs(regno, vehicleType, employeeId, buyerName, buyerPhone, sellerName)) {
+            double sellingPrice = getSellingPrice(regno);
+            double purchasePrice = getPurchasePrice(regno);
+            double transactionPrice = sellingPrice - purchasePrice;
+            
+            insertBuyerDetails(regno, buyerName, buyerPhone);
 
-                insertBuyerDetails(vehicleNo,buyerId, buyerName, buyerPhone);
+            insertTransactionDetails(employeeId, buyerName, sellerName, regno, transactionDate, transactionPrice);
 
-                // Insert transaction details into the transaction table
-                insertTransactionDetails(employeeId, buyerId, sellerName, vehicleNo, transactionDate);
-
-                // Increase transaction_count in the employee table for the specific employee
-                increaseTransactionCount(employeeId);
-
-            } else {
-                JOptionPane.showMessageDialog(this, "Please fill all required fields.");
-            }
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Purchase successful!");
+        } else {
+            JOptionPane.showMessageDialog(this, "Please fill all required fields.");
         }
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+    }
     }//GEN-LAST:event_BuyButtonActionPerformed
 
-    private void getMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_getMouseClicked
+    private void getselMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_getselMouseClicked
         // TODO add your handling code here:
-        try {
-            int vehicleNo = Integer.parseInt(Vehicleno.getText());
-            String getPriceQuery = "SELECT SELLING_PRICE FROM VEHICLE WHERE VEHICLE_ID = ?";
-            try (PreparedStatement getPriceStmt = conn.prepareStatement(getPriceQuery)) {
-                getPriceStmt.setInt(1, vehicleNo);
-                ResultSet rs = getPriceStmt.executeQuery();
+          try {
+        String regno =Vehicleno.getText();
+        String getNameQuery = "SELECT NAME FROM RESELLER WHERE REG_NO = ?";
+        try (PreparedStatement getNameStmt = conn.prepareStatement(getNameQuery)) {
+            getNameStmt.setString(1, regno);
+            ResultSet rs = getNameStmt.executeQuery();
 
-                if (rs.next()) {
-                    double sellingPrice = rs.getDouble("SELLING_PRICE");
-                    price.setText(String.valueOf(sellingPrice));
-                } else {
-                    JOptionPane.showMessageDialog(this, "Vehicle not found or no price available.", "Price Error", JOptionPane.ERROR_MESSAGE);
-                }
+            if (rs.next()) {
+                String name = rs.getString("NAME");
+                // Assuming you have a field named "resellerName" where you want to display the name
+                sellername.setText(name);
+            } else {
+                JOptionPane.showMessageDialog(this, "Vehicle not found or no reseller available.", "Reseller Error", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Invalid vehicle number format. Please enter a valid integer.", "Input Error", JOptionPane.ERROR_MESSAGE);
-        } catch (SQLException ex) {
-            Logger.getLogger(ETransactions.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(this, "Error retrieving price.", "Price Error", JOptionPane.ERROR_MESSAGE);
         }
-    }//GEN-LAST:event_getMouseClicked
+    } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(this, "Invalid vehicle number format. Please enter a valid integer.", "Input Error", JOptionPane.ERROR_MESSAGE);
+    } catch (SQLException ex) {
+        Logger.getLogger(ETransactions.class.getName()).log(Level.SEVERE, null, ex);
+        JOptionPane.showMessageDialog(this, "Error retrieving reseller name.", "Reseller Error", JOptionPane.ERROR_MESSAGE);
+    }
+    }//GEN-LAST:event_getselMouseClicked
 
-    private void getActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getActionPerformed
+    private void getselActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getselActionPerformed
        
 
-    }//GEN-LAST:event_getActionPerformed
+    }//GEN-LAST:event_getselActionPerformed
 
     private void Home1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Home1MouseClicked
         // TODO add your handling code here:
@@ -590,6 +621,34 @@ private void increaseTransactionCount(String employeeId) throws SQLException {
         dispose();
     }//GEN-LAST:event_jLabel21MouseClicked
 
+    private void getpriceMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_getpriceMouseClicked
+        // TODO add your handling code here:
+        try {
+        String regno =Vehicleno.getText();
+        String getPriceQuery = "SELECT SELLING_PRICE FROM VEHICLE WHERE REG_NO = ?";
+        try (PreparedStatement getPriceStmt = conn.prepareStatement(getPriceQuery)) {
+            getPriceStmt.setString(1, regno);
+            ResultSet rs = getPriceStmt.executeQuery();
+
+            if (rs.next()) {
+                double sellingPrice = rs.getDouble("SELLING_PRICE");
+                price.setText(String.valueOf(sellingPrice));
+            } else {
+                JOptionPane.showMessageDialog(this, "Vehicle not found or no price available.", "Price Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(this, "Invalid vehicle number format. Please enter a valid integer.", "Input Error", JOptionPane.ERROR_MESSAGE);
+    } catch (SQLException ex) {
+        Logger.getLogger(ETransactions.class.getName()).log(Level.SEVERE, null, ex);
+        JOptionPane.showMessageDialog(this, "Error retrieving price.", "Price Error", JOptionPane.ERROR_MESSAGE);
+    }
+    }//GEN-LAST:event_getpriceMouseClicked
+
+    private void getpriceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getpriceActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_getpriceActionPerformed
+
     public static void main(String args[]) {
         
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -610,12 +669,12 @@ private void increaseTransactionCount(String employeeId) throws SQLException {
     private javax.swing.JTextField Vehicleno;
     private javax.swing.JLabel Warehouse1;
     private javax.swing.JTextField buyeraname;
-    private javax.swing.JTextField buyerid;
     private javax.swing.JTextField buyerphone;
     private javax.swing.JLabel client1;
     private javax.swing.JTextField date;
     private javax.swing.JTextField employeeid;
-    private javax.swing.JButton get;
+    private javax.swing.JButton getprice;
+    private javax.swing.JButton getsel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -624,7 +683,6 @@ private void increaseTransactionCount(String employeeId) throws SQLException {
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel21;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;

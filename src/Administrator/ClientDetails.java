@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
+
 package Administrator;
 import FirstPage.OpenPage;
 import java.sql.*;
@@ -44,7 +41,7 @@ public class ClientDetails extends javax.swing.JFrame {
     public void Connect(){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn=DriverManager.getConnection("jdbc:mysql://localhost/shams","root","");
+            conn=DriverManager.getConnection("jdbc:mysql://localhost/shamsdemo","root"," ");
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
         }catch(SQLException ex){
@@ -57,10 +54,10 @@ public class ClientDetails extends javax.swing.JFrame {
         String query;
         switch (clientType) {
             case "Buyer":
-                query = "SELECT Buyer_id, NAME, PHONE, VEHICLE_ID FROM buyer";
+                query = "SELECT Buyer_id, NAME, PHONE, REG_NO FROM buyer";
                 break;
             case "Reseller":
-                query = "SELECT reseller_id, NAME, PHONE, VEHICLE_ID FROM reseller";
+                query = "SELECT reseller_id, NAME, PHONE, REG_NO FROM reseller";
                 break;
             case "ServiceProviders":
                 query = "SELECT SERVICE_PROVIDER_ID, NAME, PHONE, SERVICE_TYPE FROM service_provider";
@@ -120,6 +117,7 @@ public class ClientDetails extends javax.swing.JFrame {
         Clear = new javax.swing.JButton();
         idortype = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
+        delete = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -328,7 +326,7 @@ public class ClientDetails extends javax.swing.JFrame {
                 InsertActionPerformed(evt);
             }
         });
-        jPanel6.add(Insert, new org.netbeans.lib.awtextra.AbsoluteConstraints(146, 579, 84, 34));
+        jPanel6.add(Insert, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 570, 84, 34));
 
         update.setBackground(new java.awt.Color(0, 0, 0));
         update.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -339,7 +337,7 @@ public class ClientDetails extends javax.swing.JFrame {
                 updateActionPerformed(evt);
             }
         });
-        jPanel6.add(update, new org.netbeans.lib.awtextra.AbsoluteConstraints(413, 579, -1, 34));
+        jPanel6.add(update, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 570, -1, 34));
 
         Clear.setBackground(new java.awt.Color(0, 0, 0));
         Clear.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -350,7 +348,7 @@ public class ClientDetails extends javax.swing.JFrame {
                 ClearMouseClicked(evt);
             }
         });
-        jPanel6.add(Clear, new org.netbeans.lib.awtextra.AbsoluteConstraints(653, 579, -1, 34));
+        jPanel6.add(Clear, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 570, -1, 34));
 
         idortype.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -360,8 +358,19 @@ public class ClientDetails extends javax.swing.JFrame {
         jPanel6.add(idortype, new org.netbeans.lib.awtextra.AbsoluteConstraints(372, 496, 269, 30));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
-        jLabel5.setText("Type/Vehicle ID");
+        jLabel5.setText("Type/Reg no");
         jPanel6.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(239, 498, -1, -1));
+
+        delete.setBackground(new java.awt.Color(0, 0, 0));
+        delete.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        delete.setForeground(new java.awt.Color(255, 255, 255));
+        delete.setText("Delete");
+        delete.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                deleteMouseClicked(evt);
+            }
+        });
+        jPanel6.add(delete, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 570, 80, 30));
 
         jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/fin.jpg"))); // NOI18N
         jPanel6.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -10, 890, 730));
@@ -465,10 +474,10 @@ public class ClientDetails extends javax.swing.JFrame {
         String query;
         switch (clientType) {
             case "Buyer":
-                query = "INSERT INTO buyer (Buyer_id, NAME, PHONE, VEHICLE_ID) VALUES (?, ?, ?, ?)";
+                query = "INSERT INTO buyer (Buyer_id, NAME, PHONE, REG_NO) VALUES (?, ?, ?, ?)";
                 break;
             case "Reseller":
-                query = "INSERT INTO reseller (reseller_id, NAME, PHONE, VEHICLE_ID) VALUES (?, ?, ?, ?)";
+                query = "INSERT INTO reseller (reseller_id, NAME, PHONE, REG_NO) VALUES (?, ?, ?, ?)";
                 break;
             case "ServiceProviders":
                 query = "INSERT INTO service_provider (SERVICE_PROVIDER_ID, NAME, PHONE, SERVICE_TYPE) VALUES (?, ?, ?, ?)";
@@ -517,10 +526,10 @@ public class ClientDetails extends javax.swing.JFrame {
         String query;
         switch (clientType) {
             case "Buyer":
-                query = "UPDATE buyer SET NAME = ?, PHONE = ?, VEHICLE_ID = ? WHERE Buyer_id = ?";
+                query = "UPDATE buyer SET NAME = ?, PHONE = ?, REG_NO = ? WHERE Buyer_id = ?";
                 break;
             case "Reseller":
-                query = "UPDATE reseller SET NAME = ?, PHONE = ?, VEHICLE_ID = ? WHERE reseller_id = ?";
+                query = "UPDATE reseller SET NAME = ?, PHONE = ?, REG_NO = ? WHERE reseller_id = ?";
                 break;
             case "ServiceProviders":
                 query = "UPDATE service_provider SET NAME = ?, PHONE = ?, SERVICE_TYPE = ? WHERE SERVICE_PROVIDER_ID = ?";
@@ -570,9 +579,39 @@ public class ClientDetails extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_jLabel6MouseClicked
 
-    /**
-     * @param args the command line arguments
-     */
+    private void deleteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deleteMouseClicked
+        // TODO add your handling code here:                                       
+    try {
+        String query;
+        switch (clientType) {
+            case "Buyer":
+                query = "DELETE FROM buyer WHERE Buyer_id = ?";
+                break;
+            case "Reseller":
+                query = "DELETE FROM reseller WHERE reseller_id = ?";
+                break;
+            case "ServiceProviders":
+                query = "DELETE FROM service_provider WHERE SERVICE_PROVIDER_ID = ?";
+                break;
+            default:
+                return; 
+        }
+        pat = conn.prepareStatement(query);
+        pat.setInt(1, Integer.parseInt(clientid.getText()));
+
+        int deletedRows = pat.executeUpdate();
+        if (deletedRows > 0) {
+            JOptionPane.showMessageDialog(this, "Data deleted successfully.");
+            displayClientData(clientType); 
+            clearFields(); 
+            JOptionPane.showMessageDialog(this, "Failed to delete data.");
+        }
+    } catch (SQLException | NumberFormatException ex) {
+        Logger.getLogger(ClientDetails.class.getName()).log(Level.SEVERE, null, ex);
+        JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+    }
+    }//GEN-LAST:event_deleteMouseClicked
+
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -624,6 +663,7 @@ public class ClientDetails extends javax.swing.JFrame {
     private javax.swing.JLabel client;
     private javax.swing.JTextField clientid;
     private javax.swing.JTable clienttable;
+    private javax.swing.JButton delete;
     private javax.swing.JTextField idortype;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;

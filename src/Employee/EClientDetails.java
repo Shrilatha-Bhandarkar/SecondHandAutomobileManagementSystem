@@ -46,7 +46,7 @@ public class EClientDetails extends javax.swing.JFrame {
     public void Connect(){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn=DriverManager.getConnection("jdbc:mysql://localhost/shams","root","");
+            conn=DriverManager.getConnection("jdbc:mysql://localhost/shamsdemo","root"," ");
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
         }catch(SQLException ex){
@@ -59,10 +59,10 @@ public class EClientDetails extends javax.swing.JFrame {
         String query;
         switch (clientType) {
             case "Buyer":
-                query = "SELECT Buyer_id, NAME, PHONE, VEHICLE_ID FROM buyer";
+                query = "SELECT Buyer_id, NAME, PHONE, REG_NO FROM buyer";
                 break;
             case "Reseller":
-                query = "SELECT reseller_id, NAME, PHONE, VEHICLE_ID FROM reseller";
+                query = "SELECT reseller_id, NAME, PHONE, REG_NO FROM reseller";
                 break;
             case "ServiceProviders":
                 query = "SELECT SERVICE_PROVIDER_ID, NAME, PHONE, SERVICE_TYPE FROM service_provider";
@@ -90,6 +90,7 @@ public class EClientDetails extends javax.swing.JFrame {
         Logger.getLogger(ClientDetails.class.getName()).log(Level.SEVERE, null, ex);
     }
 }
+
 
    
     @SuppressWarnings("unchecked")
@@ -402,42 +403,43 @@ public class EClientDetails extends javax.swing.JFrame {
     private void InsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_InsertActionPerformed
         // TODO add your handling code here:
         // TODO add your handling code here:
-        try {
-            String query;
-            switch (clientType) {
-                case "Buyer":
-                query = "INSERT INTO buyer (Buyer_id, NAME, PHONE, VEHICLE_ID) VALUES (?, ?, ?, ?)";
+       try {
+        String query;
+        switch (clientType) {
+            case "Buyer":
+                query = "INSERT INTO buyer (Buyer_id, NAME, PHONE, REG_NO) VALUES (?, ?, ?, ?)";
                 break;
-                case "Reseller":
-                query = "INSERT INTO reseller (reseller_id, NAME, PHONE, VEHICLE_ID) VALUES (?, ?, ?, ?)";
+            case "Reseller":
+                query = "INSERT INTO reseller (reseller_id, NAME, PHONE, REG_NO) VALUES (?, ?, ?, ?)";
                 break;
-                case "ServiceProviders":
+            case "ServiceProviders":
                 query = "INSERT INTO service_provider (SERVICE_PROVIDER_ID, NAME, PHONE, SERVICE_TYPE) VALUES (?, ?, ?, ?)";
                 break;
-                default:
+            default:
                 return; // Return if clientType is not recognized
-            }
-            pat = conn.prepareStatement(query);
-            pat.setInt(1, Integer.parseInt(clientid.getText()));
-            pat.setString(2, name.getText());
-            pat.setString(3, phone.getText());
-            if ("Buyer".equals(clientType) || "Reseller".equals(clientType)) {
-                pat.setInt(4, Integer.parseInt(idortype.getText())); // VEHICLE_ID
-            } else {
-                pat.setString(4, idortype.getText()); // SERVICE_TYPE
-            }
-
-            int insertedRows = pat.executeUpdate();
-            if (insertedRows > 0) {
-                JOptionPane.showMessageDialog(this, "Data inserted successfully.");
-                displayClientData(clientType); // Refresh table data
-            } else {
-                JOptionPane.showMessageDialog(this, "Failed to insert data.");
-            }
-        } catch (SQLException | NumberFormatException ex) {
-            Logger.getLogger(ClientDetails.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
         }
+        pat = conn.prepareStatement(query);
+        pat.setInt(1, Integer.parseInt(clientid.getText()));
+        pat.setString(2, name.getText());
+        pat.setString(3, phone.getText());
+        if ("Buyer".equals(clientType) || "Reseller".equals(clientType)) {
+            pat.setInt(4, Integer.parseInt(idortype.getText())); // VEHICLE_ID
+        } else {
+            pat.setString(4, idortype.getText()); // SERVICE_TYPE
+        }
+
+        int insertedRows = pat.executeUpdate();
+        if (insertedRows > 0) {
+            JOptionPane.showMessageDialog(this, "Data inserted successfully.");
+            displayClientData(clientType); // Refresh table data
+        } else {
+            JOptionPane.showMessageDialog(this, "Failed to insert data.");
+        }
+    } catch (SQLException | NumberFormatException ex) {
+        Logger.getLogger(ClientDetails.class.getName()).log(Level.SEVERE, null, ex);
+        JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+    }
+
     }//GEN-LAST:event_InsertActionPerformed
   private void clearFields() {
     clientid.setText("");
@@ -449,41 +451,41 @@ public class EClientDetails extends javax.swing.JFrame {
     private void updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateActionPerformed
         // TODO add your handling code here:
         try {
-            String query;
-            switch (clientType) {
-                case "Buyer":
-                query = "UPDATE buyer SET NAME = ?, PHONE = ?, VEHICLE_ID = ? WHERE Buyer_id = ?";
+        String query;
+        switch (clientType) {
+            case "Buyer":
+                query = "UPDATE buyer SET NAME = ?, PHONE = ?, REG_NO = ? WHERE Buyer_id = ?";
                 break;
-                case "Reseller":
-                query = "UPDATE reseller SET NAME = ?, PHONE = ?, VEHICLE_ID = ? WHERE reseller_id = ?";
+            case "Reseller":
+                query = "UPDATE reseller SET NAME = ?, PHONE = ?, REG_NO = ? WHERE reseller_id = ?";
                 break;
-                case "ServiceProviders":
+            case "ServiceProviders":
                 query = "UPDATE service_provider SET NAME = ?, PHONE = ?, SERVICE_TYPE = ? WHERE SERVICE_PROVIDER_ID = ?";
                 break;
-                default:
+            default:
                 return; // Return if clientType is not recognized
-            }
-            pat = conn.prepareStatement(query);
-            pat.setString(1, name.getText());
-            pat.setString(2, phone.getText());
-            if ("Buyer".equals(clientType) || "Reseller".equals(clientType)) {
-                pat.setInt(3, Integer.parseInt(idortype.getText())); // VEHICLE_ID
-            } else {
-                pat.setString(3, idortype.getText()); // SERVICE_TYPE
-            }
-            pat.setInt(4, Integer.parseInt(clientid.getText()));
-
-            int updatedRows = pat.executeUpdate();
-            if (updatedRows > 0) {
-                JOptionPane.showMessageDialog(this, "Data updated successfully.");
-                displayClientData(clientType); // Refresh table data
-            } else {
-                JOptionPane.showMessageDialog(this, "Failed to update data.");
-            }
-        } catch (SQLException | NumberFormatException ex) {
-            Logger.getLogger(ClientDetails.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
         }
+        pat = conn.prepareStatement(query);
+        pat.setString(1, name.getText());
+        pat.setString(2, phone.getText());
+        if ("Buyer".equals(clientType) || "Reseller".equals(clientType)) {
+            pat.setInt(3, Integer.parseInt(idortype.getText())); // VEHICLE_ID
+        } else {
+            pat.setString(3, idortype.getText()); // SERVICE_TYPE
+        }
+        pat.setInt(4, Integer.parseInt(clientid.getText()));
+
+        int updatedRows = pat.executeUpdate();
+        if (updatedRows > 0) {
+            JOptionPane.showMessageDialog(this, "Data updated successfully.");
+            displayClientData(clientType); // Refresh table data
+        } else {
+            JOptionPane.showMessageDialog(this, "Failed to update data.");
+        }
+    } catch (SQLException | NumberFormatException ex) {
+        Logger.getLogger(ClientDetails.class.getName()).log(Level.SEVERE, null, ex);
+        JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+    }
     }//GEN-LAST:event_updateActionPerformed
 
     private void ClearMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ClearMouseClicked

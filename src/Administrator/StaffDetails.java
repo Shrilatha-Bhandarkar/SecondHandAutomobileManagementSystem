@@ -8,6 +8,7 @@ import FirstPage.OpenPage;
 import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
@@ -52,7 +53,7 @@ public class StaffDetails extends javax.swing.JFrame {
     public void Connect(){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn=DriverManager.getConnection("jdbc:mysql://localhost/shams","root","");
+            conn=DriverManager.getConnection("jdbc:mysql://localhost/shamsdemo","root"," ");
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
         }catch(SQLException ex){
@@ -124,7 +125,7 @@ public class StaffDetails extends javax.swing.JFrame {
 
 private void loadVehicleDetails(String staffType) {
     try {
-        String transactionQuery = "SELECT VEHICLE_ID FROM transaction WHERE EMPLOYEE_ID = ?";
+        String transactionQuery = "SELECT REG_NO FROM TRANSACTION WHERE EMPLOYEE_ID = ?";
         pat = conn.prepareStatement(transactionQuery);
         pat.setString(1, staffType);
         rs = pat.executeQuery();
@@ -133,24 +134,15 @@ private void loadVehicleDetails(String staffType) {
         model.setRowCount(0);
 
         while (rs.next()) {
-            String vehicleId = rs.getString("VEHICLE_ID");
-
-            String vehicleQuery = "SELECT VIN FROM vehicle WHERE VEHICLE_ID = ?";
-            PreparedStatement vehiclePat = conn.prepareStatement(vehicleQuery);
-            vehiclePat.setString(1, vehicleId);
-            ResultSet vehicleRs = vehiclePat.executeQuery();
-
-            while (vehicleRs.next()) {
-                Object[] row = {
-                    vehicleRs.getString("VIN")
-                };
-                model.addRow(row);
-            }
+            String regNo = rs.getString("REG_NO");
+            Object[] row = { regNo };
+            model.addRow(row);
         }
     } catch (SQLException ex) {
         Logger.getLogger(StaffDetails.class.getName()).log(Level.SEVERE, null, ex);
     }
 }
+
 private void updateEmployee() {
     // Retrieve data from input fields
     String employeeIdValue = empid.getText();
@@ -186,31 +178,33 @@ private void updateEmployee() {
     }
 }
 
-// Method to delete an employee record
-//private void deleteEmployee() {
-//    // Retrieve employee ID from the input field
-//    String employeeIdValue = empid.getText();
-//
-//    try {
-//        // Construct the SQL query for deleting the employee record
-//        String query = "DELETE FROM employee WHERE EMPLOYEE_ID=?";
-//        pat = conn.prepareStatement(query);
-//        pat.setString(1, employeeIdValue);
-//
-//        // Execute the delete query
-//        int rowsAffected = pat.executeUpdate();
-//        if (rowsAffected > 0) {
-//            // If deletion is successful, reload employee details
-//            loadEmployeeDetails(staffType);
-//            // Optionally, display a message indicating success
-//        } else {
-//            // Optionally, display a message indicating failure
-//        }
-//    } catch (SQLException ex) {
-//        Logger.getLogger(StaffDetails.class.getName()).log(Level.SEVERE, null, ex);
-//        // Optionally, display an error message to the user
-//    }
-//}
+private void deleteEmployee() {
+    // Retrieve employee ID from the input field
+    String employeeIdValue = empid.getText();
+
+    try {
+        // Construct the SQL query for deleting the employee record
+        String query = "DELETE FROM employee WHERE EMPLOYEE_ID=?";
+        pat = conn.prepareStatement(query);
+        pat.setString(1, employeeIdValue);
+
+        // Execute the delete query
+        int rowsAffected = pat.executeUpdate();
+       if (rowsAffected > 0) {
+    // If insertion is successful, reload employee details
+    loadEmployeeDetails(staffType);
+    // Optionally, display a message indicating success
+        JOptionPane.showMessageDialog(this, "Employee deleted successfully.");
+        } else {
+    // Display a message indicating failure
+          JOptionPane.showMessageDialog(this, "Failed to delete employee. Please try again.");
+        }
+
+    } catch (SQLException ex) {
+        Logger.getLogger(StaffDetails.class.getName()).log(Level.SEVERE, null, ex);
+      
+    }
+}
 
 // Method to clear all input fields
 private void clearFields() {
@@ -224,6 +218,46 @@ private void clearFields() {
     username.setText("");
     password.setText("");
 }
+private void insertEmployee() {
+    // Retrieve data from input fields
+    String employeeIdValue = empid.getText();
+    String nameValue = name.getText();
+    String addressValue = address.getText();
+    String emailValue = email.getText();
+    String phoneValue = phone.getText();
+    String transactionCountValue = transactioncount.getText();
+    String usernameValue = username.getText();
+    String passwordValue = password.getText();
+
+    try {
+        // Construct the SQL query for inserting employee details
+        String query = "INSERT INTO EMPLOYEE (EMPLOYEE_ID, NAME, ADDRESS, EMAIL, PHONE, TRANSACTION_COUNT, ROLE, USERNAME, PASSWORD) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        pat = conn.prepareStatement(query);
+        pat.setString(1, employeeIdValue);
+        pat.setString(2, nameValue);
+        pat.setString(3, addressValue);
+        pat.setString(4, emailValue);
+        pat.setString(5, phoneValue);
+        pat.setString(6, transactionCountValue);
+        pat.setString(7, staffType); // Use the provided staffType directly
+        pat.setString(8, usernameValue);
+        pat.setString(9, passwordValue);
+
+        int rowsAffected = pat.executeUpdate();
+        if (rowsAffected > 0) {
+            loadEmployeeDetails(staffType);
+            JOptionPane.showMessageDialog(this, "Employee inserted successfully.");
+        } else {
+            JOptionPane.showMessageDialog(this, "Failed to insert employee. Please try again.");
+        }
+    } catch (SQLException ex) {
+        Logger.getLogger(StaffDetails.class.getName()).log(Level.SEVERE, null, ex);
+        JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+    }
+}
+
+
+
 
 
     @SuppressWarnings("unchecked")
@@ -253,9 +287,13 @@ private void clearFields() {
         jLabel10 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         vehicle = new javax.swing.JTable();
-        Insert = new javax.swing.JButton();
+        delete = new javax.swing.JButton();
         update = new javax.swing.JButton();
         clear = new javax.swing.JButton();
+        Insert1 = new javax.swing.JButton();
+        jLabel14 = new javax.swing.JLabel();
+        employeebtnclicked = new javax.swing.JButton();
+        adminbtnclick = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         Dashboard = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
@@ -294,74 +332,74 @@ private void clearFields() {
         jScrollPane1.setViewportView(staff);
 
         jPanel6.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 713, 299));
-        jPanel6.add(empid, new org.netbeans.lib.awtextra.AbsoluteConstraints(198, 395, 192, 34));
+        jPanel6.add(empid, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 390, 192, 34));
 
         name.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 nameActionPerformed(evt);
             }
         });
-        jPanel6.add(name, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 395, 192, 34));
-        jPanel6.add(address, new org.netbeans.lib.awtextra.AbsoluteConstraints(198, 461, 192, 30));
+        jPanel6.add(name, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 390, 192, 34));
+        jPanel6.add(address, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 450, 192, 30));
 
         email.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 emailActionPerformed(evt);
             }
         });
-        jPanel6.add(email, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 461, 192, 30));
-        jPanel6.add(phone, new org.netbeans.lib.awtextra.AbsoluteConstraints(198, 526, 192, 32));
+        jPanel6.add(email, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 450, 192, 30));
+        jPanel6.add(phone, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 510, 192, 32));
 
         transactioncount.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 transactioncountActionPerformed(evt);
             }
         });
-        jPanel6.add(transactioncount, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 526, 192, 32));
-        jPanel6.add(username, new org.netbeans.lib.awtextra.AbsoluteConstraints(198, 594, 192, 30));
-        jPanel6.add(password, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 594, 192, 30));
+        jPanel6.add(transactioncount, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 510, 192, 32));
+        jPanel6.add(username, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 580, 192, 30));
+        jPanel6.add(password, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 570, 192, 30));
 
         jLabel1.setBackground(new java.awt.Color(0, 0, 0));
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel1.setText("Employee ID");
-        jPanel6.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(24, 401, 104, -1));
+        jPanel6.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 390, 120, -1));
 
         jLabel2.setBackground(new java.awt.Color(0, 0, 0));
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel2.setText("Name");
-        jPanel6.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(455, 401, 60, -1));
+        jPanel6.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 390, 60, -1));
 
         jLabel4.setBackground(new java.awt.Color(0, 0, 0));
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel4.setText("Address");
-        jPanel6.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(24, 465, 68, -1));
+        jPanel6.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 450, 68, -1));
 
         jLabel5.setBackground(new java.awt.Color(0, 0, 0));
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel5.setText("Email");
-        jPanel6.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(455, 465, 68, -1));
+        jPanel6.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 450, 68, -1));
 
         jLabel6.setBackground(new java.awt.Color(0, 0, 0));
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel6.setText("Phone");
-        jPanel6.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(24, 531, -1, -1));
+        jPanel6.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 510, -1, -1));
 
         jLabel7.setBackground(new java.awt.Color(0, 0, 0));
         jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel7.setText("Transaction count");
-        jPanel6.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(455, 531, -1, -1));
+        jPanel6.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 510, -1, -1));
 
         jLabel8.setBackground(new java.awt.Color(0, 0, 0));
         jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
         jLabel8.setText("User name");
-        jPanel6.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(27, 598, -1, -1));
+        jPanel6.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 580, -1, -1));
 
         jLabel10.setBackground(new java.awt.Color(0, 0, 0));
         jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(255, 255, 255));
         jLabel10.setText("Password");
-        jPanel6.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(455, 598, 86, -1));
+        jPanel6.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 580, 86, -1));
 
         vehicle.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -378,11 +416,16 @@ private void clearFields() {
 
         jPanel6.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 60, 126, 299));
 
-        Insert.setBackground(new java.awt.Color(0, 0, 0));
-        Insert.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        Insert.setForeground(new java.awt.Color(255, 255, 255));
-        Insert.setText("Insert");
-        jPanel6.add(Insert, new org.netbeans.lib.awtextra.AbsoluteConstraints(104, 650, 100, 40));
+        delete.setBackground(new java.awt.Color(0, 0, 0));
+        delete.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        delete.setForeground(new java.awt.Color(255, 255, 255));
+        delete.setText("delete");
+        delete.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                deleteMouseClicked(evt);
+            }
+        });
+        jPanel6.add(delete, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 690, 100, 40));
 
         update.setBackground(new java.awt.Color(0, 0, 0));
         update.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -398,7 +441,7 @@ private void clearFields() {
                 updateActionPerformed(evt);
             }
         });
-        jPanel6.add(update, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 650, 90, 40));
+        jPanel6.add(update, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 690, 90, 40));
 
         clear.setBackground(new java.awt.Color(0, 0, 0));
         clear.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -409,7 +452,45 @@ private void clearFields() {
                 clearMouseClicked(evt);
             }
         });
-        jPanel6.add(clear, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 650, 90, 40));
+        jPanel6.add(clear, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 690, 90, 40));
+
+        Insert1.setBackground(new java.awt.Color(0, 0, 0));
+        Insert1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        Insert1.setForeground(new java.awt.Color(255, 255, 255));
+        Insert1.setText("Insert");
+        Insert1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                Insert1MouseClicked(evt);
+            }
+        });
+        jPanel6.add(Insert1, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 690, 100, 40));
+
+        jLabel14.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel14.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel14.setText("Change Role to:-");
+        jPanel6.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 640, -1, -1));
+
+        employeebtnclicked.setBackground(new java.awt.Color(0, 0, 0));
+        employeebtnclicked.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        employeebtnclicked.setForeground(new java.awt.Color(255, 255, 255));
+        employeebtnclicked.setText("Employee");
+        employeebtnclicked.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                employeebtnclickedMouseClicked(evt);
+            }
+        });
+        jPanel6.add(employeebtnclicked, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 640, -1, -1));
+
+        adminbtnclick.setBackground(new java.awt.Color(0, 0, 0));
+        adminbtnclick.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        adminbtnclick.setForeground(new java.awt.Color(255, 255, 255));
+        adminbtnclick.setText("Admin");
+        adminbtnclick.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                adminbtnclickMouseClicked(evt);
+            }
+        });
+        jPanel6.add(adminbtnclick, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 640, -1, -1));
 
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/BGN3.jpg"))); // NOI18N
         jPanel6.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(-2, -4, 900, 720));
@@ -570,12 +651,11 @@ private void clearFields() {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(0, 0, 0)
                 .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(Dashboard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 21, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -674,6 +754,78 @@ private void clearFields() {
         clearFields();
     }//GEN-LAST:event_clearMouseClicked
 
+    private void Insert1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Insert1MouseClicked
+        // TODO add your handling code here:
+        insertEmployee();
+    }//GEN-LAST:event_Insert1MouseClicked
+
+    private void deleteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deleteMouseClicked
+        // TODO add your handling code here:
+        deleteEmployee();
+    }//GEN-LAST:event_deleteMouseClicked
+
+    private void adminbtnclickMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_adminbtnclickMouseClicked
+        // TODO add your handling code here:
+        int selectedRow = staff.getSelectedRow();
+    if (selectedRow != -1) {
+        try {
+            // Get the employee ID of the selected row
+            String employeeId = (String) staff.getValueAt(selectedRow, 0);
+            
+            // Construct the SQL query to update the role to ADMIN
+            String query = "UPDATE EMPLOYEE SET ROLE = 'ADMIN' WHERE EMPLOYEE_ID = ?";
+            pat = conn.prepareStatement(query);
+            pat.setString(1, employeeId);
+            
+            // Execute the update query
+            int rowsAffected = pat.executeUpdate();
+            if (rowsAffected > 0) {
+                // If update is successful, reload employee details
+                loadEmployeeDetails(staffType);
+                JOptionPane.showMessageDialog(this, "Role updated to ADMIN successfully.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to update role to ADMIN.");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(StaffDetails.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+        }
+    } else {
+        JOptionPane.showMessageDialog(this, "Please select a row first.");
+    }
+    }//GEN-LAST:event_adminbtnclickMouseClicked
+
+    private void employeebtnclickedMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_employeebtnclickedMouseClicked
+        // TODO add your handling code here:
+       int selectedRow = staff.getSelectedRow();
+    if (selectedRow != -1) {
+        try {
+            // Get the employee ID of the selected row
+            String employeeId = (String) staff.getValueAt(selectedRow, 0);
+            
+            // Construct the SQL query to update the role to EMPLOYEE
+            String query = "UPDATE EMPLOYEE SET ROLE = 'EMPLOYEE' WHERE EMPLOYEE_ID = ?";
+            pat = conn.prepareStatement(query);
+            pat.setString(1, employeeId);
+            
+            // Execute the update query
+            int rowsAffected = pat.executeUpdate();
+            if (rowsAffected > 0) {
+                // If update is successful, reload employee details
+                loadEmployeeDetails(staffType);
+                JOptionPane.showMessageDialog(this, "Role updated to EMPLOYEE successfully.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to update role to EMPLOYEE.");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(StaffDetails.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+        }
+    } else {
+        JOptionPane.showMessageDialog(this, "Please select a row first.");
+    }
+    }//GEN-LAST:event_employeebtnclickedMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -725,19 +877,23 @@ private void clearFields() {
     private javax.swing.JLabel CurrentVehicle;
     private javax.swing.JPanel Dashboard;
     private javax.swing.JLabel Home;
-    private javax.swing.JButton Insert;
+    private javax.swing.JButton Insert1;
     private javax.swing.JLabel Services;
     private javax.swing.JLabel Staff;
     private javax.swing.JTextField address;
+    private javax.swing.JButton adminbtnclick;
     private javax.swing.JButton clear;
     private javax.swing.JLabel client;
+    private javax.swing.JButton delete;
     private javax.swing.JTextField email;
     private javax.swing.JTextField empid;
+    private javax.swing.JButton employeebtnclicked;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

@@ -28,7 +28,7 @@ public class Warehouse extends javax.swing.JFrame {
     public void Connect(){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn=DriverManager.getConnection("jdbc:mysql://localhost/shams","root","");
+            conn=DriverManager.getConnection("jdbc:mysql://localhost/shamsdemo","root"," ");
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
         }catch(SQLException ex){
@@ -40,10 +40,10 @@ public class Warehouse extends javax.swing.JFrame {
     
     private void loadWarehouseDetails() {
     try {
-        String query = "SELECT w.WAREHOUSE_ID, w.WAREHOUSE_NAME, w.LOCATION, w.CAPACITY, COUNT(v.VEHICLE_ID) AS TOTAL " +
+        String query = "SELECT w.WAREHOUSE_ID, w.NAME, w.LOCATION, w.CAPACITY, COUNT(v.REG_NO) AS TOTAL " +
                        "FROM WAREHOUSE w " +
                        "LEFT JOIN VEHICLE v ON w.WAREHOUSE_ID = v.WAREHOUSE_ID AND V.STATUS='AVAILABLE'" +
-                       "GROUP BY w.WAREHOUSE_ID, w.WAREHOUSE_NAME, w.LOCATION, w.CAPACITY";
+                       "GROUP BY w.WAREHOUSE_ID, w.NAME, w.LOCATION, w.CAPACITY";
         pat = conn.prepareStatement(query);
         rs = pat.executeQuery();
 
@@ -52,7 +52,7 @@ public class Warehouse extends javax.swing.JFrame {
 
         while (rs.next()) {
             // Add data to the table model
-            model.addRow(new Object[]{rs.getInt("WAREHOUSE_ID"), rs.getString("WAREHOUSE_NAME"), rs.getString("LOCATION"), rs.getInt("CAPACITY"), rs.getInt("TOTAL")});
+            model.addRow(new Object[]{rs.getInt("WAREHOUSE_ID"), rs.getString("NAME"), rs.getString("LOCATION"), rs.getInt("CAPACITY"), rs.getInt("TOTAL")});
         }
     } catch (SQLException ex) {
         Logger.getLogger(Warehouse.class.getName()).log(Level.SEVERE, null, ex);
@@ -84,7 +84,7 @@ public class Warehouse extends javax.swing.JFrame {
 
             while (rs.next()) {
                 // Add data to the table model
-                model.addRow(new Object[]{rs.getInt("VEHICLE_ID"), rs.getString("vin"), rs.getString("company"), rs.getInt("YEAR")});
+                model.addRow(new Object[]{rs.getInt("VEHICLE_ID"), rs.getString("REG_NO"), rs.getString("company"), rs.getInt("YEAR")});
             }
         } catch (SQLException ex) {
             Logger.getLogger(Warehouse.class.getName()).log(Level.SEVERE, null, ex);
@@ -130,6 +130,7 @@ public class Warehouse extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         name = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
+        delete = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -311,7 +312,7 @@ public class Warehouse extends javax.swing.JFrame {
                 InsertActionPerformed(evt);
             }
         });
-        jPanel6.add(Insert, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 300, -1, 29));
+        jPanel6.add(Insert, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 300, -1, 29));
 
         Update.setBackground(new java.awt.Color(0, 0, 0));
         Update.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -327,7 +328,7 @@ public class Warehouse extends javax.swing.JFrame {
                 UpdateActionPerformed(evt);
             }
         });
-        jPanel6.add(Update, new org.netbeans.lib.awtextra.AbsoluteConstraints(830, 300, -1, 29));
+        jPanel6.add(Update, new org.netbeans.lib.awtextra.AbsoluteConstraints(810, 300, -1, 29));
 
         Clear.setBackground(new java.awt.Color(0, 0, 0));
         Clear.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -338,7 +339,7 @@ public class Warehouse extends javax.swing.JFrame {
                 ClearMouseClicked(evt);
             }
         });
-        jPanel6.add(Clear, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 300, -1, 28));
+        jPanel6.add(Clear, new org.netbeans.lib.awtextra.AbsoluteConstraints(810, 340, -1, 28));
 
         Knowmore.setBackground(new java.awt.Color(0, 0, 0));
         Knowmore.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -400,6 +401,17 @@ public class Warehouse extends javax.swing.JFrame {
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel6.setText("Name");
         jPanel6.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 106, -1, -1));
+
+        delete.setBackground(new java.awt.Color(0, 0, 0));
+        delete.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        delete.setForeground(new java.awt.Color(255, 255, 255));
+        delete.setText("Delete");
+        delete.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                deleteMouseClicked(evt);
+            }
+        });
+        jPanel6.add(delete, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 340, -1, 30));
 
         jLabel7.setBackground(new java.awt.Color(0, 0, 0));
         jLabel7.setForeground(new java.awt.Color(255, 255, 255));
@@ -488,7 +500,7 @@ public class Warehouse extends javax.swing.JFrame {
     private void InsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_InsertActionPerformed
         // TODO add your handling code here:
          try {
-        String query = "INSERT INTO WAREHOUSE (WAREHOUSE_ID,WAREHOUSE_NAME,LOCATION, CAPACITY) VALUES (?,?,?,?)";
+        String query = "INSERT INTO WAREHOUSE (WAREHOUSE_ID,NAME,LOCATION, CAPACITY) VALUES (?,?,?,?)";
         pat = conn.prepareStatement(query);
         pat.setInt(1, Integer.parseInt(warehouseid.getText()));
         pat.setString(2, name.getText());
@@ -517,7 +529,7 @@ public class Warehouse extends javax.swing.JFrame {
          int selectedRow = Warehousetable.getSelectedRow();
     if (selectedRow != -1) {
         try {
-            String query = "UPDATE WAREHOUSE SET LOCATION = ?,WAREHOUSE_NAME=? CAPACITY = ? WHERE WAREHOUSE_ID = ?";
+            String query = "UPDATE WAREHOUSE SET LOCATION = ?,NAME=?, CAPACITY = ? WHERE WAREHOUSE_ID = ?";
             pat = conn.prepareStatement(query);
 
             pat.setString(1, location.getText());
@@ -570,6 +582,36 @@ public class Warehouse extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_nameActionPerformed
 
+    private void deleteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deleteMouseClicked
+        // TODO add your handling code here:
+        int selectedRow = Warehousetable.getSelectedRow();
+    if (selectedRow != -1) {
+        int confirmDelete = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this warehouse?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
+        if (confirmDelete == JOptionPane.YES_OPTION) {
+            try {
+                String query = "DELETE FROM WAREHOUSE WHERE WAREHOUSE_ID = ?";
+                pat = conn.prepareStatement(query);
+                int warehouseId = Integer.parseInt(Warehousetable.getValueAt(selectedRow, 0).toString());
+                pat.setInt(1, warehouseId);
+
+                int deletedRows = pat.executeUpdate();
+                if (deletedRows > 0) {
+                    JOptionPane.showMessageDialog(this, "Warehouse deleted successfully.");
+                    loadWarehouseDetails(); // Refresh table
+                    clearFields(); // Clear input fields
+                } else {
+                    JOptionPane.showMessageDialog(this, "Failed to delete warehouse.");
+                }
+            } catch (SQLException | NumberFormatException ex) {
+                Logger.getLogger(Warehouse.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    } else {
+        JOptionPane.showMessageDialog(this, "Please select a warehouse to delete.");
+    }
+        
+    }//GEN-LAST:event_deleteMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -606,6 +648,7 @@ public class Warehouse extends javax.swing.JFrame {
     private javax.swing.JTable Warehousetable;
     private javax.swing.JTextField capacity;
     private javax.swing.JLabel client;
+    private javax.swing.JButton delete;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
