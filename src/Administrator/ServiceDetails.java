@@ -33,7 +33,7 @@ public class ServiceDetails extends javax.swing.JFrame {
     public void Connect(){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn=DriverManager.getConnection("jdbc:mysql://localhost/shamsdemo","root"," ");
+            conn=DriverManager.getConnection("jdbc:mysql://localhost/shamsdemo","root","");
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
         }catch(SQLException ex){
@@ -67,7 +67,7 @@ public class ServiceDetails extends javax.swing.JFrame {
             while (rs.next()) {
                 Object[] row = new Object[8]; // Assuming there are 8 columns in the services table
                 row[0] = rs.getInt("SERVICE_ID");
-                row[1] = rs.getString("REG_NO");
+                row[1] = rs.getString("VEHICLE_ID");
                 row[2] = rs.getInt("SERVICE_PROVIDER_ID");
                 row[3] = rs.getDate("DUE_DATE");
                 row[4] = rs.getDate("DATE");
@@ -516,7 +516,7 @@ public class ServiceDetails extends javax.swing.JFrame {
         int selectedRow = servicestable.getSelectedRow();
         if (selectedRow != -1) {
             try {
-                String query = "UPDATE service SET SERVICE_PROVIDER_ID = ?, REG_NO = ?,  DUE_DATE = ?,DATE = ?,  SERVICE_TYPE = ?, COST = ?,STATUS = ? WHERE SERVICE_ID = ?";
+                String query = "UPDATE service SET SERVICE_PROVIDER_ID = ?, VEHICLE_ID = ?,  DUE_DATE = ?,DATE = ?,  SERVICE_TYPE = ?, COST = ?,STATUS = ? WHERE SERVICE_ID = ?";
                 pat = conn.prepareStatement(query);
 
                 pat.setString(1, provider_id.getText());
@@ -532,6 +532,7 @@ public class ServiceDetails extends javax.swing.JFrame {
                 if (updatedRows > 0) {
                     loadData(serviceType);
                     clearFields();
+                    JOptionPane.showMessageDialog(this, "Updated successfully.");
                 } else {
                     System.out.println("Failed to update data.");
                 }
@@ -556,8 +557,8 @@ public class ServiceDetails extends javax.swing.JFrame {
                 if (deletedRows > 0) {
                     // Refresh table data
                     loadData(serviceType);
-                    // Clear input fields
                     clearFields();
+                    JOptionPane.showMessageDialog(this, "Deleted successfully.");
                 } else {
                     System.out.println("Failed to delete data.");
                 }
@@ -575,7 +576,7 @@ public class ServiceDetails extends javax.swing.JFrame {
     private void insertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertActionPerformed
         // TODO add your handling code here:
         try {
-        String query = "INSERT INTO service (SERVICE_PROVIDER_ID, REG_NO, DUE_DATE, DATE, SERVICE_TYPE, COST, STATUS) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO service (SERVICE_PROVIDER_ID, VEHICLE_ID, DUE_DATE, DATE, SERVICE_TYPE, COST, STATUS) VALUES (?, ?, ?, ?, ?, ?, ?)";
         
         pat = conn.prepareStatement(query);
         
@@ -592,6 +593,7 @@ public class ServiceDetails extends javax.swing.JFrame {
         if (insertedRows > 0) {
             loadData(serviceType);
             clearFields();
+            JOptionPane.showMessageDialog(this, "Inserted successfully.");
         } else {
             System.out.println("Failed to insert data.");
         }
@@ -613,7 +615,6 @@ public class ServiceDetails extends javax.swing.JFrame {
 
     if (!serviceProviderId.isEmpty()) {
         try {
-            // Query to retrieve the service type based on the service provider ID
             String query = "SELECT SERVICE_TYPE FROM SERVICE_PROVIDER WHERE SERVICE_PROVIDER_ID = ?";
             pat = conn.prepareStatement(query);
             pat.setString(1, serviceProviderId);
@@ -622,8 +623,7 @@ public class ServiceDetails extends javax.swing.JFrame {
             if (rs.next()) {
                 String serviceType = rs.getString("SERVICE_TYPE");
                 
-                // Set the retrieved values to the corresponding text fields
-                type.setText(serviceType);  // Corrected the order
+                type.setText(serviceType);  
             } else {
                 JOptionPane.showMessageDialog(this, "No service type found for the provided service provider ID.");
             }
@@ -638,30 +638,6 @@ public class ServiceDetails extends javax.swing.JFrame {
 
   
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ServiceDetails.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ServiceDetails.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ServiceDetails.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ServiceDetails.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
             ServiceDetails totalDetails = new ServiceDetails("Total Services");

@@ -28,7 +28,7 @@ public class Warehouse extends javax.swing.JFrame {
     public void Connect(){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn=DriverManager.getConnection("jdbc:mysql://localhost/shamsdemo","root"," ");
+            conn=DriverManager.getConnection("jdbc:mysql://localhost/shamsdemo","root","");
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
         }catch(SQLException ex){
@@ -40,7 +40,7 @@ public class Warehouse extends javax.swing.JFrame {
     
     private void loadWarehouseDetails() {
     try {
-        String query = "SELECT w.WAREHOUSE_ID, w.NAME, w.LOCATION, w.CAPACITY, COUNT(v.REG_NO) AS TOTAL " +
+        String query = "SELECT w.WAREHOUSE_ID, w.NAME, w.LOCATION, w.CAPACITY, COUNT(v.VEHICLE_ID) AS TOTAL " +
                        "FROM WAREHOUSE w " +
                        "LEFT JOIN VEHICLE v ON w.WAREHOUSE_ID = v.WAREHOUSE_ID AND V.STATUS='AVAILABLE'" +
                        "GROUP BY w.WAREHOUSE_ID, w.NAME, w.LOCATION, w.CAPACITY";
@@ -84,7 +84,7 @@ public class Warehouse extends javax.swing.JFrame {
 
             while (rs.next()) {
                 // Add data to the table model
-                model.addRow(new Object[]{rs.getInt("VEHICLE_ID"), rs.getString("REG_NO"), rs.getString("company"), rs.getInt("YEAR")});
+                model.addRow(new Object[]{rs.getInt("VIN"), rs.getString("VEHICLE_ID"), rs.getString("company"), rs.getInt("YEAR")});
             }
         } catch (SQLException ex) {
             Logger.getLogger(Warehouse.class.getName()).log(Level.SEVERE, null, ex);

@@ -29,7 +29,7 @@ public class ESoldVehicleDetails extends javax.swing.JFrame {
     public void Connect(){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn=DriverManager.getConnection("jdbc:mysql://localhost/shamsdemo","root"," ");
+            conn=DriverManager.getConnection("jdbc:mysql://localhost/shamsdemo","root","");
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
         }catch(SQLException ex){
@@ -50,8 +50,8 @@ public class ESoldVehicleDetails extends javax.swing.JFrame {
         
         while(rs.next()){
             Object[] row = new Object[9]; 
-            row[0] = rs.getInt("VEHICLE_ID");
-            row[1] = rs.getString("REG_NO");
+            row[0] = rs.getInt("VIN");
+            row[1] = rs.getString("VEHICLE_ID");
             row[2] = rs.getString("MODEL");
             row[3] = rs.getString("COMPANY");
             row[4] = rs.getDate("TRANSACTION_DATE");

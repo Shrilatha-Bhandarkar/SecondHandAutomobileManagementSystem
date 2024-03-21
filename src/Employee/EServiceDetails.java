@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
@@ -34,7 +35,7 @@ public class EServiceDetails extends javax.swing.JFrame {
     public void Connect(){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn=DriverManager.getConnection("jdbc:mysql://localhost/shamsdemo","root"," ");
+            conn=DriverManager.getConnection("jdbc:mysql://localhost/shamsdemo","root","");
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
         }catch(SQLException ex){
@@ -68,7 +69,7 @@ public class EServiceDetails extends javax.swing.JFrame {
             while (rs.next()) {
                 Object[] row = new Object[8]; // Assuming there are 8 columns in the services table
                 row[0] = rs.getInt("SERVICE_ID");
-                row[1] = rs.getString("REG_NO");
+                row[1] = rs.getString("VEHICLE_ID");
                 row[2] = rs.getInt("SERVICE_PROVIDER_ID");
                 row[3] = rs.getDate("DUE_DATE");
                 row[4] = rs.getDate("DATE");
@@ -426,7 +427,7 @@ public class EServiceDetails extends javax.swing.JFrame {
     private void insertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertActionPerformed
         // TODO add your handling code here:
         try {
-        String query = "INSERT INTO service (SERVICE_PROVIDER_ID, REG_NO, DUE_DATE, DATE, SERVICE_TYPE, COST, STATUS) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO service (SERVICE_PROVIDER_ID, VEHICLE_ID, DUE_DATE, DATE, SERVICE_TYPE, COST, STATUS) VALUES (?, ?, ?, ?, ?, ?, ?)";
         
         pat = conn.prepareStatement(query);
         
@@ -443,6 +444,7 @@ public class EServiceDetails extends javax.swing.JFrame {
         if (insertedRows > 0) {
             loadData(serviceType);
             clearFields();
+            JOptionPane.showMessageDialog(this, "Inserted successfully.");
         } else {
             System.out.println("Failed to insert data.");
         }
@@ -456,7 +458,7 @@ public class EServiceDetails extends javax.swing.JFrame {
         int selectedRow = servicestable.getSelectedRow();
         if (selectedRow != -1) {
             try {
-                String query = "UPDATE service SET SERVICE_PROVIDER_ID = ?, REG_NO = ?,  DUE_DATE = ?,DATE = ?,  SERVICE_TYPE = ?, COST = ?,STATUS = ? WHERE SERVICE_ID = ?";
+                String query = "UPDATE service SET SERVICE_PROVIDER_ID = ?, VEHICLE_ID = ?,  DUE_DATE = ?,DATE = ?,  SERVICE_TYPE = ?, COST = ?,STATUS = ? WHERE SERVICE_ID = ?";
                 pat = conn.prepareStatement(query);
 
                 pat.setString(1, provider_id.getText());
@@ -472,6 +474,7 @@ public class EServiceDetails extends javax.swing.JFrame {
                 if (updatedRows > 0) {
                     loadData(serviceType);
                     clearFields();
+                    JOptionPane.showMessageDialog(this, "Updated successfully.");
                 } else {
                     System.out.println("Failed to update data.");
                 }

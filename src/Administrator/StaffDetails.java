@@ -30,7 +30,7 @@ public class StaffDetails extends javax.swing.JFrame {
             if (selectedRow != -1) {
                 DefaultTableModel model = (DefaultTableModel) staff.getModel();
                 
-                // Populate the text fields with the data of the selected row
+                
                 empid.setText(model.getValueAt(selectedRow, 0).toString());
                 name.setText(model.getValueAt(selectedRow, 1).toString());
                 address.setText(model.getValueAt(selectedRow, 2).toString());
@@ -53,7 +53,7 @@ public class StaffDetails extends javax.swing.JFrame {
     public void Connect(){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn=DriverManager.getConnection("jdbc:mysql://localhost/shamsdemo","root"," ");
+            conn=DriverManager.getConnection("jdbc:mysql://localhost/shamsdemo","root","");
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
         }catch(SQLException ex){
@@ -91,28 +91,25 @@ public class StaffDetails extends javax.swing.JFrame {
                 int selectedRow = staff.getSelectedRow();
                 if (selectedRow != -1) {
                     try {
-                        // Retrieve username and password based on the selected row
                         String employeeId = (String) staff.getValueAt(selectedRow, 0);
                         String usernameValue = "";
                         String passwordValue = "";
 
-                        // Execute another query to retrieve username and password
                         String credentialsQuery = "SELECT USERNAME, PASSWORD FROM employee WHERE EMPLOYEE_ID = ?";
                         pat = conn.prepareStatement(credentialsQuery);
                         pat.setString(1, employeeId);
                         ResultSet credentialsResult = pat.executeQuery();
 
-                        // Assuming only one row will be returned, you can handle multiple rows if necessary
+                        
                         if (credentialsResult.next()) {
                             usernameValue = credentialsResult.getString("USERNAME");
                             passwordValue = credentialsResult.getString("PASSWORD");
                         }
 
-                        // Set username and password fields
                         username.setText(usernameValue);
                         password.setText(passwordValue);
                     } catch (SQLException ex) {
-                        ex.printStackTrace(); // Handle the exception appropriately
+                        ex.printStackTrace(); 
                     }
                 }
             }
@@ -125,7 +122,7 @@ public class StaffDetails extends javax.swing.JFrame {
 
 private void loadVehicleDetails(String staffType) {
     try {
-        String transactionQuery = "SELECT REG_NO FROM TRANSACTION WHERE EMPLOYEE_ID = ?";
+        String transactionQuery = "SELECT VEHICLE_ID FROM TRANSACTION WHERE EMPLOYEE_ID = ?";
         pat = conn.prepareStatement(transactionQuery);
         pat.setString(1, staffType);
         rs = pat.executeQuery();
@@ -134,7 +131,7 @@ private void loadVehicleDetails(String staffType) {
         model.setRowCount(0);
 
         while (rs.next()) {
-            String regNo = rs.getString("REG_NO");
+            String regNo = rs.getString("VEHICLE_ID");
             Object[] row = { regNo };
             model.addRow(row);
         }
@@ -151,52 +148,46 @@ private void updateEmployee() {
     String emailValue = email.getText();
     String phoneValue = phone.getText();
     String transactionCountValue = transactioncount.getText();
-
+    String user = username.getText();
+    String pass = password.getText();
+    
     try {
-        // Construct the SQL query for updating employee details
-        String query = "UPDATE employee SET NAME=?, ADDRESS=?, EMAIL=?, PHONE=?, TRANSACTION_COUNT=? WHERE EMPLOYEE_ID=?";
+       
+        String query = "UPDATE employee SET NAME=?, ADDRESS=?, EMAIL=?, PHONE=?, TRANSACTION_COUNT=?,USERNAME=?,PASSWORD=? WHERE EMPLOYEE_ID=?";
         pat = conn.prepareStatement(query);
         pat.setString(1, nameValue);
         pat.setString(2, addressValue);
         pat.setString(3, emailValue);
         pat.setString(4, phoneValue);
         pat.setString(5, transactionCountValue);
-        pat.setString(6, employeeIdValue);
-
-        // Execute the update query
+        pat.setString(6, user);
+        pat.setString(7, pass);
+        pat.setString(8, employeeIdValue);
+        
         int rowsAffected = pat.executeUpdate();
         if (rowsAffected > 0) {
-            // If update is successful, reload employee details
             loadEmployeeDetails(staffType);
-            // Optionally, display a message indicating success
+            JOptionPane.showMessageDialog(this, "Updated successfully.");
         } else {
-            // Optionally, display a message indicating failure
         }
     } catch (SQLException ex) {
         Logger.getLogger(StaffDetails.class.getName()).log(Level.SEVERE, null, ex);
-        // Optionally, display an error message to the user
     }
 }
 
 private void deleteEmployee() {
-    // Retrieve employee ID from the input field
     String employeeIdValue = empid.getText();
 
     try {
-        // Construct the SQL query for deleting the employee record
         String query = "DELETE FROM employee WHERE EMPLOYEE_ID=?";
         pat = conn.prepareStatement(query);
         pat.setString(1, employeeIdValue);
 
-        // Execute the delete query
         int rowsAffected = pat.executeUpdate();
        if (rowsAffected > 0) {
-    // If insertion is successful, reload employee details
     loadEmployeeDetails(staffType);
-    // Optionally, display a message indicating success
         JOptionPane.showMessageDialog(this, "Employee deleted successfully.");
         } else {
-    // Display a message indicating failure
           JOptionPane.showMessageDialog(this, "Failed to delete employee. Please try again.");
         }
 
@@ -780,7 +771,6 @@ private void insertEmployee() {
             // Execute the update query
             int rowsAffected = pat.executeUpdate();
             if (rowsAffected > 0) {
-                // If update is successful, reload employee details
                 loadEmployeeDetails(staffType);
                 JOptionPane.showMessageDialog(this, "Role updated to ADMIN successfully.");
             } else {

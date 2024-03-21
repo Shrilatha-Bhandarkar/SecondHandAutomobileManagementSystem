@@ -46,7 +46,7 @@ public class VehicleDetails extends javax.swing.JFrame {
     public void Connect(){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn=DriverManager.getConnection("jdbc:mysql://localhost/shamsdemo","root"," ");
+            conn=DriverManager.getConnection("jdbc:mysql://localhost/shamsdemo","root","");
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
         }catch(SQLException ex){
@@ -57,9 +57,9 @@ public class VehicleDetails extends javax.swing.JFrame {
 
     private void loadData(String vehicleType) {
     try {
-        String sql = "SELECT V.VEHICLE_ID, V.MODEL, V.COMPANY, V.MILEAGE, V.COLOUR, V.YEAR, V.SELLING_PRICE,R.NAME AS SELLER_NAME, R.PHONE AS SELLER_PHONE,V.REG_NO " +
+        String sql = "SELECT V.VIN, V.MODEL, V.COMPANY, V.MILEAGE, V.COLOUR, V.YEAR, V.SELLING_PRICE,R.NAME AS SELLER_NAME, R.PHONE AS SELLER_PHONE,V.VEHICLE_ID " +
                      "FROM VEHICLE V " +
-                     "JOIN RESELLER R ON V.REG_NO = R.REG_NO " +
+                     "JOIN RESELLER R ON V.VEHICLE_ID = R.VEHICLE_ID " +
                      "WHERE V.TYPE = ? AND STATUS='AVAILABLE'";
         pat = conn.prepareStatement(sql);
         pat.setString(1, vehicleType);
@@ -70,7 +70,7 @@ public class VehicleDetails extends javax.swing.JFrame {
         
         while(rs.next()){
             Object[] row = new Object[11]; // 10 columns are selected from the database
-            row[0] = rs.getInt("VEHICLE_ID");
+            row[0] = rs.getInt("VIN");
             row[1] = rs.getString("MODEL");
             row[2] = rs.getString("COMPANY");
             row[3] = rs.getInt("MILEAGE");
@@ -79,7 +79,7 @@ public class VehicleDetails extends javax.swing.JFrame {
             row[6] = rs.getBigDecimal("SELLING_PRICE");
             row[7] = rs.getString("SELLER_PHONE");
             row[8] = rs.getString("SELLER_NAME"); 
-            row[9] = rs.getString("REG_NO"); 
+            row[9] = rs.getString("VEHICLE_ID"); 
              // Seller Phone
             model.addRow(row);
         }
@@ -115,7 +115,7 @@ public class VehicleDetails extends javax.swing.JFrame {
             register.setText(regNo);
             
             
-            String vehicleQuery = "SELECT PURCHASE_PRICE, WAREHOUSE_ID FROM VEHICLE WHERE REG_NO = ?";
+            String vehicleQuery = "SELECT PURCHASE_PRICE, WAREHOUSE_ID FROM VEHICLE WHERE VEHICLE_ID= ?";
             pat = conn.prepareStatement(vehicleQuery);
             pat.setString(1, regNo);
             ResultSet vehicleResult = pat.executeQuery();
@@ -128,7 +128,7 @@ public class VehicleDetails extends javax.swing.JFrame {
                 warehouseid.setText(String.valueOf(warehouseIdValue));
             }
             
-            String sellerQuery = "SELECT RESELLER_ID, NAME, PHONE FROM RESELLER WHERE REG_NO = ?";
+            String sellerQuery = "SELECT RESELLER_ID, NAME, PHONE FROM RESELLER WHERE VEHICLE_ID = ?";
             pat = conn.prepareStatement(sellerQuery);
             pat.setString(1, regNo);
             ResultSet sellerResult = pat.executeQuery();
@@ -154,7 +154,7 @@ public class VehicleDetails extends javax.swing.JFrame {
    private void insertData() {
     try {
         // Insert data into VEHICLE table
-        String insertVehicleQuery = "INSERT INTO VEHICLE (COMPANY, TYPE, MILEAGE, COLOUR, REG_NO, MODEL, YEAR, STATUS, PURCHASE_PRICE, SELLING_PRICE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String insertVehicleQuery = "INSERT INTO VEHICLE (COMPANY, TYPE, MILEAGE, COLOUR, VEHICLE_ID, MODEL, YEAR, STATUS, PURCHASE_PRICE, SELLING_PRICE,WAREHOUSE_ID) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         pat = conn.prepareStatement(insertVehicleQuery, Statement.RETURN_GENERATED_KEYS);
         pat.setString(1, companyfield.getText());
         pat.setString(2, vehicleType);
@@ -166,7 +166,7 @@ public class VehicleDetails extends javax.swing.JFrame {
         pat.setString(8, "AVAILABLE");
         pat.setBigDecimal(9, new BigDecimal(pprice.getText()));
         pat.setBigDecimal(10, new BigDecimal(sprice.getText()));
-
+        pat.setInt(11, Integer.parseInt(warehouseid.getText()));
         int affectedRows = pat.executeUpdate();
 
         if (affectedRows == 0) {
@@ -184,7 +184,7 @@ public class VehicleDetails extends javax.swing.JFrame {
         }
 
         // Insert data into RESELLER table
-        String insertResellerQuery = "INSERT INTO RESELLER (REG_NO, NAME, PHONE) VALUES (?, ?, ?)";
+        String insertResellerQuery = "INSERT INTO RESELLER (VEHICLE_ID, NAME, PHONE) VALUES (?, ?, ?)";
         pat = conn.prepareStatement(insertResellerQuery);
         pat.setString(1, register.getText());
         pat.setString(2, sellername.getText());
@@ -209,7 +209,7 @@ public class VehicleDetails extends javax.swing.JFrame {
 private void updateData() {
     try {
         
-        String updateVehicleQuery = "UPDATE VEHICLE SET COMPANY=?, MODEL=?, MILEAGE=?, COLOUR=?, YEAR=?, PURCHASE_PRICE=?, WAREHOUSE_ID=? WHERE REG_NO=?";
+        String updateVehicleQuery = "UPDATE VEHICLE SET COMPANY=?, MODEL=?, MILEAGE=?, COLOUR=?, YEAR=?, PURCHASE_PRICE=?, WAREHOUSE_ID=? WHERE VEHICLE_ID=?";
         pat = conn.prepareStatement(updateVehicleQuery);
         pat.setString(1, companyfield.getText());
         pat.setString(2, modelfield.getText());
@@ -223,7 +223,7 @@ private void updateData() {
         pat.executeUpdate();
 
        
-        String updateResellerQuery = "UPDATE RESELLER SET NAME=?, PHONE=? WHERE REG_NO=?";
+        String updateResellerQuery = "UPDATE RESELLER SET NAME=?, PHONE=? WHERE VEHICLE_ID=?";
         pat = conn.prepareStatement(updateResellerQuery);
         pat.setString(1, sellername.getText());
         pat.setString(2, sellerphone.getText());
@@ -249,13 +249,13 @@ private void deleteData() {
         String vin = register.getText();
         
         // Delete data from RESELLER table
-        String deleteResellerQuery = "DELETE FROM RESELLER WHERE REG_NO=?";
+        String deleteResellerQuery = "DELETE FROM RESELLER WHERE VEHICLE_ID=?";
         pat = conn.prepareStatement(deleteResellerQuery);
         pat.setString(1, vin);
         pat.executeUpdate();
         
         // Delete data from VEHICLE table
-        String deleteVehicleQuery = "DELETE FROM VEHICLE WHERE REG_NO=?";
+        String deleteVehicleQuery = "DELETE FROM VEHICLE WHERE VEHICLE_ID=?";
         pat = conn.prepareStatement(deleteVehicleQuery);
         pat.setString(1, vin);
         pat.executeUpdate();

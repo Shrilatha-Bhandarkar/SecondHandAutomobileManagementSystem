@@ -46,7 +46,7 @@ public class EClientDetails extends javax.swing.JFrame {
     public void Connect(){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn=DriverManager.getConnection("jdbc:mysql://localhost/shamsdemo","root"," ");
+            conn=DriverManager.getConnection("jdbc:mysql://localhost/shamsdemo","root","");
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
         }catch(SQLException ex){
@@ -59,10 +59,10 @@ public class EClientDetails extends javax.swing.JFrame {
         String query;
         switch (clientType) {
             case "Buyer":
-                query = "SELECT Buyer_id, NAME, PHONE, REG_NO FROM buyer";
+                query = "SELECT Buyer_id, NAME, PHONE, VEHICLE_ID FROM buyer";
                 break;
             case "Reseller":
-                query = "SELECT reseller_id, NAME, PHONE, REG_NO FROM reseller";
+                query = "SELECT reseller_id, NAME, PHONE, VEHICLE_ID FROM reseller";
                 break;
             case "ServiceProviders":
                 query = "SELECT SERVICE_PROVIDER_ID, NAME, PHONE, SERVICE_TYPE FROM service_provider";
@@ -407,10 +407,10 @@ public class EClientDetails extends javax.swing.JFrame {
         String query;
         switch (clientType) {
             case "Buyer":
-                query = "INSERT INTO buyer (Buyer_id, NAME, PHONE, REG_NO) VALUES (?, ?, ?, ?)";
+                query = "INSERT INTO buyer (Buyer_id, NAME, PHONE, VEHICLE_ID) VALUES (?, ?, ?, ?)";
                 break;
             case "Reseller":
-                query = "INSERT INTO reseller (reseller_id, NAME, PHONE, REG_NO) VALUES (?, ?, ?, ?)";
+                query = "INSERT INTO reseller (reseller_id, NAME, PHONE, VEHICLE_ID) VALUES (?, ?, ?, ?)";
                 break;
             case "ServiceProviders":
                 query = "INSERT INTO service_provider (SERVICE_PROVIDER_ID, NAME, PHONE, SERVICE_TYPE) VALUES (?, ?, ?, ?)";
@@ -454,10 +454,10 @@ public class EClientDetails extends javax.swing.JFrame {
         String query;
         switch (clientType) {
             case "Buyer":
-                query = "UPDATE buyer SET NAME = ?, PHONE = ?, REG_NO = ? WHERE Buyer_id = ?";
+                query = "UPDATE buyer SET NAME = ?, PHONE = ?, VEHICLE_ID = ? WHERE Buyer_id = ?";
                 break;
             case "Reseller":
-                query = "UPDATE reseller SET NAME = ?, PHONE = ?, REG_NO = ? WHERE reseller_id = ?";
+                query = "UPDATE reseller SET NAME = ?, PHONE = ?, VEHICLE_ID = ? WHERE reseller_id = ?";
                 break;
             case "ServiceProviders":
                 query = "UPDATE service_provider SET NAME = ?, PHONE = ?, SERVICE_TYPE = ? WHERE SERVICE_PROVIDER_ID = ?";

@@ -23,7 +23,7 @@ public class ERegister extends javax.swing.JFrame {
     public void Connect(){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn=DriverManager.getConnection("jdbc:mysql://localhost/shamsdemo","root"," ");
+            conn=DriverManager.getConnection("jdbc:mysql://localhost/shamsdemo","root","");
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(ERegister.class.getName()).log(Level.SEVERE, null, ex);
         }catch(SQLException ex){
@@ -46,6 +46,11 @@ public class ERegister extends javax.swing.JFrame {
         ERPassword = new javax.swing.JPasswordField();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
+        veriuser = new javax.swing.JTextField();
+        verify = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        veripass = new javax.swing.JPasswordField();
         jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -83,7 +88,7 @@ public class ERegister extends javax.swing.JFrame {
                 empidActionPerformed(evt);
             }
         });
-        jPanel1.add(empid, new org.netbeans.lib.awtextra.AbsoluteConstraints(464, 122, 183, 31));
+        jPanel1.add(empid, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 120, 183, 31));
 
         Register.setBackground(new java.awt.Color(0, 0, 0));
         Register.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -99,25 +104,25 @@ public class ERegister extends javax.swing.JFrame {
         Username.setBackground(new java.awt.Color(255, 255, 255));
         Username.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         Username.setText("User Name");
-        jPanel1.add(Username, new org.netbeans.lib.awtextra.AbsoluteConstraints(362, 213, -1, 31));
+        jPanel1.add(Username, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 350, -1, 31));
 
         Passowrd.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         Passowrd.setText("Password");
-        jPanel1.add(Passowrd, new org.netbeans.lib.awtextra.AbsoluteConstraints(362, 309, 70, -1));
+        jPanel1.add(Passowrd, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 410, 70, -1));
 
         ERUsername.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ERUsernameActionPerformed(evt);
             }
         });
-        jPanel1.add(ERUsername, new org.netbeans.lib.awtextra.AbsoluteConstraints(464, 214, 183, 31));
+        jPanel1.add(ERUsername, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 350, 183, 31));
 
         ERPassword.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ERPasswordActionPerformed(evt);
             }
         });
-        jPanel1.add(ERPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(464, 305, 183, 31));
+        jPanel1.add(ERPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 410, 183, 31));
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel2.setText("Go back to login");
@@ -130,7 +135,28 @@ public class ERegister extends javax.swing.JFrame {
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel3.setText("Emp ID");
-        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(362, 122, -1, 31));
+        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 120, -1, 31));
+        jPanel1.add(veriuser, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 190, 180, 30));
+
+        verify.setBackground(new java.awt.Color(0, 0, 0));
+        verify.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        verify.setForeground(new java.awt.Color(255, 255, 255));
+        verify.setText("Verify");
+        verify.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                verifyMouseClicked(evt);
+            }
+        });
+        jPanel1.add(verify, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 300, -1, 30));
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel5.setText("Username");
+        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 190, -1, 20));
+
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel6.setText("Password");
+        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 260, -1, -1));
+        jPanel1.add(veripass, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 250, 170, 30));
 
         jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/fin.jpg"))); // NOI18N
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 90, 970, 530));
@@ -196,6 +222,39 @@ public class ERegister extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_jLabel2MouseClicked
 
+    private void verifyMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_verifyMouseClicked
+        // TODO add your handling code here:
+        String eempid = empid.getText();
+    String user = veriuser.getText();
+    String pass = new String(veripass.getPassword());
+
+    try {
+        pat = conn.prepareStatement("SELECT * FROM employee WHERE employee_id = ? AND username = ? AND password = ?");
+        pat.setString(1, eempid);
+        pat.setString(2, user);
+        pat.setString(3, pass);
+
+        rs = pat.executeQuery();
+
+        if (rs.next()) {
+            JOptionPane.showMessageDialog(this, "Verification Successful");
+            
+        } else {
+            JOptionPane.showMessageDialog(this, "Invalid Credentials");
+        }
+    } catch (SQLException ex) {
+        Logger.getLogger(ERegister.class.getName()).log(Level.SEVERE, null, ex);
+    } finally {
+        try {
+            if (rs != null) rs.close();
+            if (pat != null) pat.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(ERegister.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+        
+    }//GEN-LAST:event_verifyMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -243,6 +302,11 @@ public class ERegister extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JButton verify;
+    private javax.swing.JPasswordField veripass;
+    private javax.swing.JTextField veriuser;
     // End of variables declaration//GEN-END:variables
 }

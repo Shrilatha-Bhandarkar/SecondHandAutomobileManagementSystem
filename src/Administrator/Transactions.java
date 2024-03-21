@@ -20,7 +20,7 @@ public class Transactions extends javax.swing.JFrame {
     public void Connect(){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn=DriverManager.getConnection("jdbc:mysql://localhost/shamsdemo","root"," ");
+            conn=DriverManager.getConnection("jdbc:mysql://localhost/shamsdemo","root","");
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
         }catch(SQLException ex){
@@ -41,7 +41,7 @@ public class Transactions extends javax.swing.JFrame {
 
 
 private int insertBuyerDetails(String regno, String buyerName, String buyerPhone) throws SQLException {
-    String insertQuery = "INSERT INTO BUYER (REG_NO, NAME, PHONE) VALUES (?, ?, ?)";
+    String insertQuery = "INSERT INTO BUYER (VEHICLE_ID, NAME, PHONE) VALUES (?, ?, ?)";
     try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)) {
         insertStmt.setString(1, regno);
         insertStmt.setString(2, buyerName);
@@ -65,7 +65,7 @@ private int insertBuyerDetails(String regno, String buyerName, String buyerPhone
 
 private void insertTransactionDetails(String employeeId, String buyerName, String sellerName, String regno, String transactionDate, double transactionPrice) throws SQLException {
     // Assuming that transaction price is included in the query
-    String insertQuery = "INSERT INTO TRANSACTION (EMPLOYEE_ID, BUYER_ID, SELLER_ID, REG_NO, TRANSACTION_DATE, TRANSACTION_PRICE) VALUES (?, (SELECT BUYER_ID FROM BUYER WHERE NAME = ?), (SELECT RESELLER_ID FROM RESELLER WHERE NAME = ?), ?, ?, ?)";
+    String insertQuery = "INSERT INTO TRANSACTION (EMPLOYEE_ID, BUYER_ID, SELLER_ID, VEHICLE_ID, TRANSACTION_DATE, TRANSACTION_PRICE) VALUES (?, (SELECT BUYER_ID FROM BUYER WHERE NAME = ?), (SELECT RESELLER_ID FROM RESELLER WHERE NAME = ?), ?, ?, ?)";
     try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)) {
         insertStmt.setString(1, employeeId);
         insertStmt.setString(2, buyerName); 
@@ -95,7 +95,7 @@ private void insertTransactionDetails(String employeeId, String buyerName, Strin
 
 
 private void updateVehicleAfterTransaction(String regno, int transactionId) throws SQLException {
-    String updateQuery = "UPDATE VEHICLE SET TRANSACTION_ID = ?, STATUS = 'SOLD' WHERE REG_NO = ?";
+    String updateQuery = "UPDATE VEHICLE SET TRANSACTION_ID = ?, STATUS = 'SOLD' WHERE VEHICLE_ID = ?";
     try (PreparedStatement updateStmt = conn.prepareStatement(updateQuery)) {
         updateStmt.setInt(1, transactionId);
         updateStmt.setString(2, regno);
@@ -103,7 +103,7 @@ private void updateVehicleAfterTransaction(String regno, int transactionId) thro
     }
 }
 private double getSellingPrice(String regno) throws SQLException {
-    String getPriceQuery = "SELECT SELLING_PRICE FROM VEHICLE WHERE REG_NO = ?";
+    String getPriceQuery = "SELECT SELLING_PRICE FROM VEHICLE WHERE VEHICLE_ID = ?";
     try (PreparedStatement getPriceStmt = conn.prepareStatement(getPriceQuery)) {
         getPriceStmt.setString(1, regno);
         ResultSet rs = getPriceStmt.executeQuery();
@@ -116,7 +116,7 @@ private double getSellingPrice(String regno) throws SQLException {
 }
 
 private double getPurchasePrice(String regno) throws SQLException {
-    String getPriceQuery = "SELECT PURCHASE_PRICE FROM VEHICLE WHERE REG_NO = ?";
+    String getPriceQuery = "SELECT PURCHASE_PRICE FROM VEHICLE WHERE VEHICLE_ID = ?";
     try (PreparedStatement getPriceStmt = conn.prepareStatement(getPriceQuery)) {
         getPriceStmt.setString(1,regno);
         ResultSet rs = getPriceStmt.executeQuery();
@@ -626,7 +626,7 @@ private double getPurchasePrice(String regno) throws SQLException {
         // TODO add your handling code here:
           try {
         String regno =Vehicleno.getText();
-        String getNameQuery = "SELECT NAME FROM RESELLER WHERE REG_NO = ?";
+        String getNameQuery = "SELECT NAME FROM RESELLER WHERE VEHICLE_ID = ?";
         try (PreparedStatement getNameStmt = conn.prepareStatement(getNameQuery)) {
             getNameStmt.setString(1, regno);
             ResultSet rs = getNameStmt.executeQuery();
@@ -659,7 +659,7 @@ private double getPurchasePrice(String regno) throws SQLException {
         // TODO add your handling code here:
          try {
         String regno =Vehicleno.getText();
-        String getPriceQuery = "SELECT SELLING_PRICE FROM VEHICLE WHERE REG_NO = ?";
+        String getPriceQuery = "SELECT SELLING_PRICE FROM VEHICLE WHERE VEHICLE_ID = ?";
         try (PreparedStatement getPriceStmt = conn.prepareStatement(getPriceQuery)) {
             getPriceStmt.setString(1, regno);
             ResultSet rs = getPriceStmt.executeQuery();
