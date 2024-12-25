@@ -28,7 +28,6 @@ public class EClientDetails extends javax.swing.JFrame {
                     int selectedRow = clienttable.getSelectedRow();
                     if (selectedRow != -1) { // If a row is selected
                         DefaultTableModel model = (DefaultTableModel) clienttable.getModel();
-                        // Populate the text fields with the data of the selected row
                         clientid.setText(model.getValueAt(selectedRow, 0).toString());
                         name.setText(model.getValueAt(selectedRow, 1).toString());
                         phone.setText(model.getValueAt(selectedRow, 2).toString());
